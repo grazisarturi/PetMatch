@@ -30,7 +30,7 @@ export default function LoginScreen({ navigation }) {
         <TouchableOpacity style={styles.loginButton}
             onPress={() => navigation.navigate('AbrigoDashboard')}
         >
-          <Text style={styles.loginButtonText}>Login</Text>
+        <Text style={styles.loginButtonText}>Login</Text>
         </TouchableOpacity>
 
         <View style={styles.dividerContainer}>

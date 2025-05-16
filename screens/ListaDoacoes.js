@@ -1,23 +1,16 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-export default function ListaPets({ navigation }) {
-  const pets = [
-    {
-      id: 1,
-      nome: 'Fred',
-      imagem: require('../images/fred.jpeg')
-    },
-    {
-      id: 2,
-      nome: 'Lili',
-      imagem: require('../images/lili.jpeg')
-    }
+export default function ListaDoacoes({ navigation }) {
+  const doacoes = [
+    { id: 1, item: 'Ração', quantidade: '20 kg', abrigo: 'Abrigo São Francisco' },
+    { id: 2, item: 'Vermífugos', quantidade: '10 caixas', abrigo: 'Abrigo São Francisco' },
+    { id: 3, item: 'Produtos de limpeza', quantidade: '5 produtos', abrigo: 'Abrigo São Francisco' }
   ];
 
-  const editar = (nome) => Alert.alert('Editar', `Editar informações de ${nome}`);
-  const excluir = (nome) => Alert.alert('Excluir', `Excluir ${nome} da lista`);
+  const editar = (item) => Alert.alert('Editar', `Editar doação: ${item}`);
+  const excluir = (item) => Alert.alert('Excluir', `Excluir doação: ${item}`);
 
   return (
     <View style={styles.container}>
@@ -31,19 +24,18 @@ export default function ListaPets({ navigation }) {
       <View style={styles.linhaInferior} />
 
       <ScrollView contentContainerStyle={styles.listContainer}>
-        {pets.map((pet) => (
-          <View key={pet.id} style={styles.card}>
-            <Image source={pet.imagem} style={styles.image} />
-            
-            <View style={styles.center}>
-              <Text style={styles.nome}>{pet.nome}</Text>
+        {doacoes.map((d) => (
+          <View key={d.id} style={styles.card}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.item}>{d.item}</Text>
+              <Text style={styles.info}>{d.quantidade}</Text>
+              <Text style={styles.info}>{d.abrigo}</Text>
             </View>
-
             <View style={styles.botoes}>
-              <TouchableOpacity style={styles.botaoEditar} onPress={() => editar(pet.nome)}>
+              <TouchableOpacity style={styles.botaoEditar} onPress={() => editar(d.item)}>
                 <Text style={styles.textoEditar}>Editar</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.botaoExcluir} onPress={() => excluir(pet.nome)}>
+              <TouchableOpacity style={styles.botaoExcluir} onPress={() => excluir(d.item)}>
                 <Text style={styles.textoExcluir}>Excluir</Text>
               </TouchableOpacity>
             </View>
@@ -51,16 +43,18 @@ export default function ListaPets({ navigation }) {
         ))}
 
         <TouchableOpacity
-          style={styles.cadastrar}
-          onPress={() => navigation.navigate('CadastroAnimal')}
+          style={styles.adicionarButton}
+          onPress={() => navigation.navigate('PedidoDoacao')}
         >
-          <Text style={styles.cadastrarTexto}>Cadastrar novo animal</Text>
+          <Ionicons name="add" size={20} color="#fff" />
+          <Text style={styles.adicionarTexto}>Adicionar nova doação</Text>
         </TouchableOpacity>
       </ScrollView>
 
       <View style={styles.footer}>
-        <Ionicons name="home-outline" size={25} color="#fff" 
-        onPress={() => navigation.navigate('AbrigoDashboard')}/>
+        <Ionicons name="home-outline" size={24} color="#fff" 
+        onPress={() => navigation.navigate('AbrigoDashboard')}
+        />
       </View>
     </View>
   );
@@ -68,17 +62,15 @@ export default function ListaPets({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
-  
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: 50,
-    paddingHorizontal: 20,
-    backgroundColor: '#fff'
+    paddingHorizontal: 20
   },
   logo: {
-    fontSize: 30,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#1a7f37'
   },
@@ -88,30 +80,25 @@ const styles = StyleSheet.create({
     width: '100%'
   },
   listContainer: {
-    padding: 30
+    padding: 20
   },
   card: {
     flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1.5,
-    borderColor: '#1a7f37',
-    borderRadius: 12,
-    padding: 10,
-    marginBottom: 20,
-    backgroundColor: '#fff'
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 15,
+    backgroundColor: '#f8f8f8'
   },
-  image: {
-    width: 100,
-    height: 100,
-    borderRadius: 8
+  item: {
+    fontWeight: 'bold',
+    marginBottom: 2
   },
-  center: {
-    flex: 1,
-    alignItems: 'center'
-  },
-  nome: {
-    fontSize: 16,
-    fontWeight: 'bold'
+  info: {
+    color: '#333',
+    marginBottom: 2
   },
   botoes: {
     justifyContent: 'center',
@@ -120,8 +107,8 @@ const styles = StyleSheet.create({
   },
   botaoEditar: {
     backgroundColor: '#e6f4ea',
-    paddingVertical: 6,
-    paddingHorizontal: 17,
+    paddingVertical: 4,
+    paddingHorizontal: 13,
     borderRadius: 6,
     borderColor: '#1a7f37',
     borderWidth: 1
@@ -132,29 +119,31 @@ const styles = StyleSheet.create({
   },
   botaoExcluir: {
     backgroundColor: '#fde8e8',
-    paddingVertical: 6,
-    paddingHorizontal: 14,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
     borderRadius: 6,
     borderColor: '#e53935',
-    borderWidth: 1,
-    marginTop: 8
+    borderWidth: 1
   },
   textoExcluir: {
     color: '#e53935',
     fontWeight: 'bold'
   },
-  cadastrar: {
+  adicionarButton: {
+    flexDirection: 'row',
     backgroundColor: '#1a7f37',
     padding: 14,
-    borderRadius: 6,
+    borderRadius: 8,
     alignItems: 'center',
-    marginTop: 200
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: 20
   },
-  cadastrarTexto: {
+  adicionarTexto: {
     color: '#fff',
     fontWeight: 'bold'
   },
-   footer: {
+  footer: {
     backgroundColor: '#1a7f37',
     alignItems: 'center',
     padding: 20,

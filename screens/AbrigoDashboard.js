@@ -16,18 +16,24 @@ export default function AbrigoDashboard({ navigation }) {
             style={styles.card}
             onPress={() => navigation.navigate('ListaPets')}
         >
-        <MaterialCommunityIcons name="paw" size={24} color="#1a7f37" />
+        <MaterialCommunityIcons name="paw" size={24} color="#black" />
         <Text style={styles.cardText}>Cadastrar pet para adoção</Text>
         </TouchableOpacity>
 
 
-        <TouchableOpacity style={styles.card}>
-          <FontAwesome5 name="gift" size={20} color="#black" />
+        <TouchableOpacity
+          style={styles.card}
+          onPress={() => navigation.navigate('ListaDoacoes')}
+        >
+          <FontAwesome5 name="gift" size={20} color="#000" />
           <Text style={styles.cardText}>Adicionar pedido de doação</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.card}>
-          <Ionicons name="chatbubbles" size={22} color="#black" />
+
+        <TouchableOpacity style={styles.card}
+          onPress={() => navigation.navigate('Mensagens')}
+          >
+          <Ionicons name="chatbubbles" size={22} color="#000"/>
           <Text style={styles.cardText}>Mensagens recebidas</Text>
         </TouchableOpacity>
 
