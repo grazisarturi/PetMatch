@@ -40,7 +40,7 @@ export default function CadastroAnimal({ navigation }) {
         <TextInput style={styles.inputFull} placeholder="Descrição" multiline />
         <TextInput style={styles.inputFull} placeholder="Localização" />
 
-=        <View style={styles.switchContainer}>
+        <View style={styles.switchContainer}>
           <Text style={styles.switchLabel}>Castrado</Text>
           <Switch value={castrado} onValueChange={setCastrado} />
         </View>

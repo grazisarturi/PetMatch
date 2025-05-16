@@ -1,23 +1,47 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function ListaPets({ navigation }) {
-  const pets = [
-    {
-      id: 1,
-      nome: 'Fred',
-      imagem: require('../images/fred.jpeg')
-    },
-    {
-      id: 2,
-      nome: 'Lili',
-      imagem: require('../images/lili.jpeg')
-    }
-  ];
+  // Estado para a lista de pets, para permitir exclusão dinâmica
+  const [pets, setPets] = useState([
+    { id: 1, nome: 'Fred', imagem: require('../images/fred.jpeg') },
+    { id: 2, nome: 'Lili', imagem: require('../images/lili.jpeg') }
+  ]);
 
-  const editar = (nome) => Alert.alert('Editar', `Editar informações de ${nome}`);
-  const excluir = (nome) => Alert.alert('Excluir', `Excluir ${nome} da lista`);
+  const editar = (pet) => {
+    Alert.alert('Editar', `Você quer editar ${pet.nome}?`, [
+      {
+        text: 'Cancelar',
+        style: 'cancel'
+      },
+      {
+        text: 'OK',
+        onPress: () => {
+          // Navegar para o formulário de edição, passando o pet como parâmetro
+          navigation.navigate('CadastroAnimal', { pet });
+        }
+      }
+    ]);
+  };
+
+  const excluir = (pet) => {
+    Alert.alert(
+      'Excluir',
+      `Tem certeza que deseja excluir ${pet.nome}?`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Excluir',
+          style: 'destructive',
+          onPress: () => {
+            // Remove o pet do estado para atualizar a lista na tela
+            setPets((prevPets) => prevPets.filter((p) => p.id !== pet.id));
+          }
+        }
+      ]
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -34,16 +58,16 @@ export default function ListaPets({ navigation }) {
         {pets.map((pet) => (
           <View key={pet.id} style={styles.card}>
             <Image source={pet.imagem} style={styles.image} />
-            
+
             <View style={styles.center}>
               <Text style={styles.nome}>{pet.nome}</Text>
             </View>
 
             <View style={styles.botoes}>
-              <TouchableOpacity style={styles.botaoEditar} onPress={() => editar(pet.nome)}>
+              <TouchableOpacity style={styles.botaoEditar} onPress={() => editar(pet)}>
                 <Text style={styles.textoEditar}>Editar</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.botaoExcluir} onPress={() => excluir(pet.nome)}>
+              <TouchableOpacity style={styles.botaoExcluir} onPress={() => excluir(pet)}>
                 <Text style={styles.textoExcluir}>Excluir</Text>
               </TouchableOpacity>
             </View>
@@ -59,8 +83,12 @@ export default function ListaPets({ navigation }) {
       </ScrollView>
 
       <View style={styles.footer}>
-        <Ionicons name="home-outline" size={25} color="#fff" 
-        onPress={() => navigation.navigate('AbrigoDashboard')}/>
+        <Ionicons
+          name="home-outline"
+          size={25}
+          color="#fff"
+          onPress={() => navigation.navigate('AbrigoDashboard')}
+        />
       </View>
     </View>
   );
@@ -68,7 +96,7 @@ export default function ListaPets({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
-  
+
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -154,7 +182,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold'
   },
-   footer: {
+  footer: {
     backgroundColor: '#1a7f37',
     alignItems: 'center',
     padding: 20,
