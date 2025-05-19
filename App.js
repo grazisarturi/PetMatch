@@ -27,5 +27,6 @@ export default function App() {
         <Stack.Screen name="Mensagens" component={MensagensRecebidas} />
       </Stack.Navigator>
     </NavigationContainer>
+    
   );
 }
