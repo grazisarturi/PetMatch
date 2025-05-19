@@ -14,17 +14,17 @@ import MensagensRecebidas from './screens/MensagensRecebidas';
 
 
 //adotante
-import Login from './screens/Login';
-import CadastroAdotante from './screens/CadastroAdotante';
-import Opcoes from './screens/Opcoes';
-import TelaInicial from './screens/TelaInicial';
-import Filtros from './screens/Filtros';
-import DetalhesAnimal from './screens/DetalhesAnimal';
-import Chat from './screens/Chat';
-import PesquisarDoacoes from './screens/PesquisarDoacoes';
-import Doacoes from './screens/Doacoes';
-import Clinicas from './screens/Clinicas';
-import DetalhesClinica from './screens/DetalhesClinica';
+import Login from './screens/Adotante/Login';
+import CadastroAdotante from './screens/Adotante/CadastroAdotante';
+import Opcoes from './screens/Adotante/Opcoes';
+import TelaInicial from './screens/Adotante/TelaInicial';
+import Filtros from './screens/Adotante/Filtros';
+import DetalhesAnimal from './screens/Adotante/DetalhesAnimal';
+import Chat from './screens/Adotante/Chat';
+import PesquisarDoacoes from './screens/Adotante/PesquisarDoacoes';
+import Doacoes from './screens/Adotante/Doacoes';
+import Clinicas from './screens/Adotante/Clinicas';
+import DetalhesClinica from './screens/Adotante/DetalhesClinica';
 
 const Stack = createNativeStackNavigator();
 
