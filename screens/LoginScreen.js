@@ -27,10 +27,8 @@ export default function LoginScreen({ navigation }) {
           secureTextEntry
         />
 
-        <TouchableOpacity style={styles.loginButton}
-            onPress={() => navigation.navigate('AbrigoDashboard')}
-        >
-        <Text style={styles.loginButtonText}>Login</Text>
+        <TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate('AbrigoDashboard')}>
+          <Text style={styles.loginButtonText}>Login</Text>
         </TouchableOpacity>
 
         <View style={styles.dividerContainer}>
@@ -39,72 +37,65 @@ export default function LoginScreen({ navigation }) {
           <View style={styles.line} />
         </View>
 
-        <TouchableOpacity style={styles.secondaryButton}>
+        <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.navigate('CadastroAdotante')}>
           <Text style={styles.secondaryButtonText}>Cadastrar como adotante</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-            style={styles.secondaryButton}
-            onPress={() => navigation.navigate('Abrigo')}
-        >
-        <Text style={styles.secondaryButtonText}>Cadastrar como abrigo</Text>
+        <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.navigate('Abrigo')}>
+          <Text style={styles.secondaryButtonText}>Cadastrar como abrigo</Text>
         </TouchableOpacity>
-
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ffffff'
-  },
+  container: { flex: 1, backgroundColor: '#ffffff' },
   header: {
     backgroundColor: '#1a7f37',
     paddingVertical: 85,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   logo: {
     fontSize: 35,
     fontWeight: 'bold',
-    color: '#ffffff'
+    color: '#ffffff',
   },
   form: {
     padding: 20,
-    marginTop: 30
+    marginTop: 30,
   },
   input: {
     backgroundColor: '#f2f2f2',
     borderRadius: 6,
     padding: 12,
-    marginBottom: 25
+    marginBottom: 25,
   },
   loginButton: {
     backgroundColor: '#1a7f37',
     padding: 12,
     borderRadius: 6,
     alignItems: 'center',
-    marginBottom: 25
+    marginBottom: 25,
   },
   loginButtonText: {
     color: '#fff',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   dividerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 25
+    marginBottom: 25,
   },
   line: {
     flex: 1,
     height: 1,
-    backgroundColor: '#ccc'
+    backgroundColor: '#ccc',
   },
   or: {
     marginHorizontal: 10,
-    color: '#888'
+    color: '#888',
   },
   secondaryButton: {
     borderColor: '#1a7f37',
@@ -112,10 +103,10 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 6,
     alignItems: 'center',
-    marginBottom: 15
+    marginBottom: 15,
   },
   secondaryButtonText: {
     color: '#1a7f37',
-    fontWeight: 'bold'
-  }
+    fontWeight: 'bold',
+  },
 });

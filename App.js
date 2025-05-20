@@ -14,7 +14,6 @@ import MensagensRecebidas from './screens/MensagensRecebidas';
 
 
 //adotante
-import Login from './screens/Adotante/Login';
 import CadastroAdotante from './screens/Adotante/CadastroAdotante';
 import Opcoes from './screens/Adotante/Opcoes';
 import TelaInicial from './screens/Adotante/TelaInicial';
@@ -44,7 +43,6 @@ export default function App() {
         <Stack.Screen name="Mensagens" component={MensagensRecebidas} />
 
         {/* Telas Adotante */}
-        <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="CadastroAdotante" component={CadastroAdotante} />
         <Stack.Screen name="Opcoes" component={Opcoes} />
         <Stack.Screen name="TelaInicial" component={TelaInicial} />

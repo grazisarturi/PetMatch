@@ -6,12 +6,14 @@ import {
   TouchableOpacity,
   StyleSheet,
   FlatList,
+  ImageBackground,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-export default function Chat({ route }) {
-  const { nomeContato = 'Abrigo de Animais' } = route.params || {};
+export default function Chat({ route, navigation }) {
+  const { nomeContato = 'ABRIGO DE ANIMAIS SÃO FRANCISCO DE ASSIS DE CASCAVEL-PR' } = route.params || {};
   const [mensagem, setMensagem] = useState('');
   const [mensagens, setMensagens] = useState([
     { id: '1', texto: 'Olá! Como podemos te ajudar?', tipo: 'recebida' },
@@ -32,38 +34,71 @@ export default function Chat({ route }) {
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={80}
+      keyboardVerticalOffset={90}
     >
+      {/* Cabeçalho */}
       <View style={styles.header}>
-        <Text style={styles.nomeContato}>{nomeContato}</Text>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={24} color="#1a7f37" />
+        </TouchableOpacity>
+        <Text style={styles.logo}>PetMatch</Text>
+        <View style={{ width: 24 }} />
+      </View>
+      <View style={styles.linhaInferior} />
+
+      {/* Nome do abrigo e do usuário */}
+      <View style={styles.topInfo}>
+        <ImageBackground
+          source={require('../../images/abrigo-logo.png')}
+          style={styles.abrigoFoto}
+          imageStyle={{ borderRadius: 50 }}
+        />
+        <Text style={styles.abrigoNome}>{nomeContato}</Text>
       </View>
 
-      <FlatList
-        style={styles.chat}
-        data={mensagens}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View
-            style={[
-              styles.mensagem,
-              item.tipo === 'enviada' ? styles.enviada : styles.recebida,
-            ]}
-          >
-            <Text style={styles.textoMensagem}>{item.texto}</Text>
-          </View>
-        )}
-      />
+      {/* Chat com fundo personalizado */}
+      <ImageBackground
+        source={require('../../images/bg-patinhas.png')}
+        style={styles.chatBackground}
+      >
+        <FlatList
+          data={mensagens}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{ padding: 15 }}
+          renderItem={({ item }) => (
+            <View
+              style={[
+                styles.mensagem,
+                item.tipo === 'enviada' ? styles.enviada : styles.recebida,
+              ]}
+            >
+              <Text style={styles.textoMensagem}>{item.texto}</Text>
+            </View>
+          )}
+        />
+      </ImageBackground>
 
+      {/* Área de envio */}
       <View style={styles.areaInput}>
         <TextInput
           style={styles.input}
-          placeholder="Digite sua mensagem..."
+          placeholder="Escreva..."
           value={mensagem}
           onChangeText={setMensagem}
         />
         <TouchableOpacity onPress={enviarMensagem} style={styles.botaoEnviar}>
-          <Text style={styles.textoBotao}>Enviar</Text>
+          <Ionicons name="send" size={20} color="#fff" />
         </TouchableOpacity>
+      </View>
+
+      {/* Rodapé */}
+      <View style={styles.footer}>
+        <Ionicons
+          name="home-outline"
+          size={24}
+          color="#fff"
+          onPress={() => navigation.navigate('Opcoes')}
+        />
       </View>
     </KeyboardAvoidingView>
   );
@@ -72,62 +107,85 @@ export default function Chat({ route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f6f6f6',
+    backgroundColor: '#fff',
   },
   header: {
-    padding: 15,
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#fff',
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
-  nomeContato: {
-    fontSize: 18,
+  logo: {
+    fontSize: 24,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#1a7f37',
   },
-  chat: {
+  linhaInferior: {
+    height: 4,
+    backgroundColor: '#1a7f37',
+  },
+  topInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+  },
+  abrigoFoto: {
+    width: 45,
+    height: 45,
+    marginRight: 10,
+  },
+  abrigoNome: {
+    fontWeight: 'bold',
+    fontSize: 12,
+    flexShrink: 1,
+  },
+  chatBackground: {
     flex: 1,
-    padding: 10,
+    resizeMode: 'cover',
   },
   mensagem: {
-    padding: 10,
-    marginVertical: 6,
+    padding: 12,
+    marginVertical: 4,
     maxWidth: '75%',
     borderRadius: 12,
   },
   enviada: {
     alignSelf: 'flex-end',
-    backgroundColor: '#DFF0D8',
+    backgroundColor: '#1a7f37',
+    marginRight: 10,
   },
   recebida: {
     alignSelf: 'flex-start',
-    backgroundColor: '#e0e0e0',
+    backgroundColor: '#a8e6a1',
+    marginLeft: 10,
   },
   textoMensagem: {
-    fontSize: 15,
+    color: '#fff',
   },
   areaInput: {
     flexDirection: 'row',
+    alignItems: 'center',
     padding: 10,
     backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#ccc',
   },
   input: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: '#ccc',
+    backgroundColor: '#f2f2f2',
     borderRadius: 25,
     paddingHorizontal: 15,
     marginRight: 10,
   },
   botaoEnviar: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#1a7f37',
     borderRadius: 25,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    justifyContent: 'center',
+    padding: 10,
   },
-  textoBotao: {
-    color: '#fff',
-    fontWeight: 'bold',
+  footer: {
+    backgroundColor: '#1a7f37',
+    alignItems: 'center',
+    padding: 15,
   },
+  
 });

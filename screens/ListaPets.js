@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert } fr
 import { Ionicons } from '@expo/vector-icons';
 
 export default function ListaPets({ navigation }) {
-  // Estado para a lista de pets, para permitir exclusão dinâmica
   const [pets, setPets] = useState([
     { id: 1, nome: 'Fred', imagem: require('../images/fred.jpeg') },
     { id: 2, nome: 'Lili', imagem: require('../images/lili.jpeg') }
@@ -18,7 +17,6 @@ export default function ListaPets({ navigation }) {
       {
         text: 'OK',
         onPress: () => {
-          // Navegar para o formulário de edição, passando o pet como parâmetro
           navigation.navigate('CadastroAnimal', { pet });
         }
       }
@@ -35,7 +33,6 @@ export default function ListaPets({ navigation }) {
           text: 'Excluir',
           style: 'destructive',
           onPress: () => {
-            // Remove o pet do estado para atualizar a lista na tela
             setPets((prevPets) => prevPets.filter((p) => p.id !== pet.id));
           }
         }

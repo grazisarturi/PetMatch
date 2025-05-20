@@ -1,54 +1,96 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { MaterialCommunityIcons, FontAwesome5, Ionicons } from '@expo/vector-icons';
 
 export default function Options({ navigation }) {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>PetMatch</Text>
-      <Text style={styles.subtitle}>O que está buscando hoje?</Text>
+      <View style={styles.header}>
+        <Text style={styles.logo}>PetMatch</Text>
+      </View>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Home')}>
-        <Text style={styles.buttonText}>Quero adotar</Text>
-      </TouchableOpacity>
+      <View style={styles.content}>
+        <Text style={styles.question}>O que está buscando hoje?</Text>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Donations')}>
-        <Text style={styles.buttonText}>Quero doar</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.card}
+          onPress={() => navigation.navigate('TelaInicial')}
+        >
+          <MaterialCommunityIcons name="paw" size={24} color="#000" />
+          <Text style={styles.cardText}>Quero adotar</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('PartnerClinics')}>
-        <Text style={styles.buttonText}>Clínicas Parceiras</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.card}
+          onPress={() => navigation.navigate('PesquisarDoacoes')}
+        >
+          <FontAwesome5 name="gift" size={20} color="#000" />
+          <Text style={styles.cardText}>Quero doar</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.card}
+          onPress={() => navigation.navigate('Clinicas')}
+        >
+          <Ionicons name="medkit-outline" size={22} color="#000" />
+          <Text style={styles.cardText}>Clínicas Parceiras</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.logout}
+          onPress={() => navigation.navigate('Login')}
+        >
+          <Ionicons name="log-out-outline" size={20} color="red" />
+          <Text style={styles.logoutText}>Sair da conta</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    justifyContent: 'center',
-    backgroundColor: '#fff',
+  container: { flex: 1, backgroundColor: '#fff' },
+  header: {
+    backgroundColor: '#1a7f37',
+    paddingVertical: 85,
+    alignItems: 'center'
   },
-  title: {
-    fontSize: 28,
+  logo: {
+    fontSize: 30,
     fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 20,
+    color: '#fff'
   },
-  subtitle: {
+  content: {
+    padding: 20
+  },
+  question: {
     fontSize: 18,
-    textAlign: 'center',
     marginBottom: 30,
+    fontWeight: 'bold'
   },
-  button: {
-    backgroundColor: '#2e7d32',
-    padding: 15,
+  card: {
+    borderWidth: 1.5,
+    borderColor: '#000000',
     borderRadius: 8,
-    marginBottom: 20,
+    padding: 30,
+    marginBottom: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10
   },
-  buttonText: {
-    color: '#fff',
-    textAlign: 'center',
-    fontSize: 16,
+  cardText: {
+    color: '#1a7f37',
+    fontWeight: 'bold',
+    fontSize: 16
   },
+  logout: {
+    flexDirection: 'row',
+    marginTop: 175,
+    alignItems: 'center'
+  },
+  logoutText: {
+    color: 'red',
+    fontWeight: 'bold',
+    marginLeft: 6
+  }
 });

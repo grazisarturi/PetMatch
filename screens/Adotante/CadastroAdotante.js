@@ -1,62 +1,89 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 
-export default function Register({ navigation }) {
+export default function CadastroAdotante({ navigation }) {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [cpf, setCpf] = useState('');
   const [senha, setSenha] = useState('');
 
+  const handleCadastro = () => {
+    Alert.alert('Cadastro', 'Adotante cadastrado com sucesso!');
+    navigation.navigate('Login');
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>PetMatch</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Nome"
-        value={nome}
-        onChangeText={setNome}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="E-mail"
-        value={email}
-        onChangeText={setEmail}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="CPF"
-        value={cpf}
-        onChangeText={setCpf}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Senha"
-        secureTextEntry
-        value={senha}
-        onChangeText={setSenha}
-      />
-      <Button title="Cadastrar" onPress={() => navigation.navigate('Options')} />
+      <View style={styles.header}>
+        <Text style={styles.logo}>PetMatch</Text>
+      </View>
+
+      <ScrollView contentContainerStyle={styles.form}>
+        <TextInput
+          style={styles.input}
+          placeholder="Nome"
+          value={nome}
+          onChangeText={setNome}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="E-mail"
+          value={email}
+          onChangeText={setEmail}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="CPF"
+          value={cpf}
+          onChangeText={setCpf}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Senha"
+          secureTextEntry
+          value={senha}
+          onChangeText={setSenha}
+        />
+
+        <TouchableOpacity style={styles.cadastrarButton} onPress={() => navigation.navigate('Opcoes')}>
+          <Text style={styles.cadastrarButtonText}>Cadastrar</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  container: { flex: 1, backgroundColor: '#fff' },
+  header: {
+    backgroundColor: '#1a7f37',
+    paddingVertical: 85,
     justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logo: {
+    fontSize: 35,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  form: {
     padding: 20,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 30,
-  },
   input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
+    backgroundColor: '#f2f2f2',
+    borderRadius: 6,
     padding: 12,
-    marginBottom: 15,
-    borderRadius: 5,
+    marginBottom: 20,
+  },
+  cadastrarButton: {
+    backgroundColor: '#1a7f37',
+    padding: 14,
+    borderRadius: 6,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  cadastrarButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });

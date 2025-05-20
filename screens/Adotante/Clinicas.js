@@ -1,21 +1,33 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, FlatList, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  FlatList,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 const clinicas = [
   {
     id: '1',
-    nome: 'Clínica Veterinária Amor de Alguém',
-    localizacao: 'Cascavel - PR',
+    nome: 'CLÍNICA VETERINÁRIA AMOR DE ALGUÉM',
+    localizacao: 'R. Castro Alves, 362 - Centro, Dois Vizinhos - PR',
+    imagem: require('../../images/clinica1.png'),
   },
   {
     id: '2',
-    nome: 'Clínica Pet Saúde',
-    localizacao: 'Toledo - PR',
+    nome: 'CLÍNICA VETERINÁRIA AMOR DE ALGUÉM',
+    localizacao: 'R. Castro Alves, 362 - Centro, Dois Vizinhos - PR',
+    imagem: require('../../images/clinica1.png'),
   },
   {
     id: '3',
-    nome: 'Clínica Animal Cuidado & Vida',
-    localizacao: 'Cascavel - PR',
+    nome: 'CLÍNICA VETERINÁRIA AMOR DE ALGUÉM',
+    localizacao: 'R. Castro Alves, 362 - Centro, Dois Vizinhos - PR',
+    imagem: require('../../images/clinica1.png'),
   },
 ];
 
@@ -35,20 +47,36 @@ export default function Clinicas({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Clínicas Parceiras 🏥</Text>
+      {/* Cabeçalho */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={24} color="#1a7f37" />
+        </TouchableOpacity>
+        <Text style={styles.logo}>PetMatch</Text>
+        <View style={{ width: 24 }} />
+      </View>
+      <View style={styles.linhaInferior} />
 
+      <Text style={styles.subtitulo}>Carinho em forma de cuidado 🐾</Text>
+
+      <Text style={styles.label}>Nome do Clínica Veterinária/ Pet Shop:</Text>
       <TextInput
-        placeholder="Nome da clínica"
+        placeholder=""
         value={nomeFiltro}
         onChangeText={setNomeFiltro}
         style={styles.input}
       />
+      <Text style={styles.label}>Localização:</Text>
       <TextInput
-        placeholder="Localização"
+        placeholder=""
         value={localizacaoFiltro}
         onChangeText={setLocalizacaoFiltro}
         style={styles.input}
       />
+
+      <TouchableOpacity style={styles.botao}>
+        <Text style={styles.botaoTexto}>APLICAR</Text>
+      </TouchableOpacity>
 
       <FlatList
         data={clinicasFiltradas}
@@ -58,50 +86,118 @@ export default function Clinicas({ navigation }) {
             style={styles.card}
             onPress={() => navigation.navigate('DetalhesClinica', { clinica: item })}
           >
-            <Text style={styles.nome}>{item.nome}</Text>
-            <Text style={styles.local}>{item.localizacao}</Text>
+            <Image source={item.imagem} style={styles.logoClinica} />
+            <View style={{ flex: 1 }}>
+              <Text style={styles.nome}>{item.nome}</Text>
+              <Text style={styles.local}>📍 {item.localizacao}</Text>
+            </View>
           </TouchableOpacity>
         )}
         contentContainerStyle={styles.list}
       />
+
+      {/* Rodapé */}
+      <View style={styles.footer}>
+        <Ionicons
+          name="home-outline"
+          size={25}
+          color="#fff"
+          onPress={() => navigation.navigate('Opcoes')}
+        />
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-    backgroundColor: '#fff',
-    flex: 1,
+  container: { flex: 1, backgroundColor: '#fff'},
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 50,
+    marginHorizontal: 16,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: '700',
-    marginBottom: 16,
+  logo: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: '#1a7f37',
+  },
+  linhaInferior: {
+    height: 4,
+    backgroundColor: '#1a7f37',
+    width: '100%',
+    marginBottom: 10,
+  },
+  subtitulo: {
     textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 14,
+    marginBottom: 20,
+  },
+  label: {
+    marginBottom: 5,
+    fontWeight: '600',
+    marginHorizontal: 16,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 10,
+    borderColor: '#1a7f37',
+    backgroundColor: '#b8f0b0',
+    borderRadius: 8,
     padding: 10,
-    marginBottom: 10,
+    marginBottom: 15,
+    marginHorizontal: 16,
+  },
+  botao: {
+    backgroundColor: '#1a7f37',
+    padding: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginBottom: 20,
+    marginHorizontal: 16,
+  },
+  botaoTexto: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
   list: {
-    paddingTop: 10,
+    paddingBottom: 100,
   },
   card: {
-    backgroundColor: '#f1f1f1',
-    padding: 15,
+    backgroundColor: '#d9fdd3',
     borderRadius: 12,
-    marginBottom: 12,
+    padding: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: '#1a7f37',
+    marginHorizontal: 16,
+  },
+  logoClinica: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderColor: '#ccc',
+    borderWidth: 1,
   },
   nome: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontWeight: 'bold',
+    fontSize: 14,
+    flexShrink: 1,
   },
   local: {
-    fontSize: 14,
-    color: '#555',
+    fontSize: 12,
+    color: '#4d4d4d',
+  },
+  footer: {
+    backgroundColor: '#1a7f37',
+    alignItems: 'center',
+    padding: 20,
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
   },
 });
