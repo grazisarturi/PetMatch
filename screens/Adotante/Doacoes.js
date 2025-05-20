@@ -40,7 +40,6 @@ const doacoes = [
 export default function Doacoes({ navigation }) {
   return (
     <View style={styles.container}>
-      {/* Topo */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="#1a7f37" />
@@ -50,7 +49,6 @@ export default function Doacoes({ navigation }) {
       </View>
       <View style={styles.linhaInferior} />
 
-      {/* Imagem e informações do abrigo */}
       <Image
         source={require('../../images/abrigo-capa.jpg')}
         style={styles.imagemCapa}
@@ -66,7 +64,6 @@ export default function Doacoes({ navigation }) {
         📍 R. Paranaguá, 1149 - Bairro São Cristóvão, Cascavel - PR
       </Text>
 
-      {/* Lista de doações */}
       <FlatList
         data={doacoes}
         keyExtractor={(item) => item.id}
@@ -86,7 +83,6 @@ export default function Doacoes({ navigation }) {
         showsVerticalScrollIndicator={false}
       />
 
-      {/* Rodapé */}
       <View style={styles.footer}>
         <Ionicons
           name="home-outline"
