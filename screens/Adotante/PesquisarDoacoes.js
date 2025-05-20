@@ -30,12 +30,11 @@ export default function PesquisarDoacoes({ navigation }) {
   ];
 
   const aplicarFiltro = () => {
-    // lógica de filtro aqui
+
   };
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="#1a7f37" />
@@ -47,7 +46,6 @@ export default function PesquisarDoacoes({ navigation }) {
 
       <Text style={styles.titulo}>Pequenos gestos, grandes patinhas felizes 🐾</Text>
 
-      {/* Filtros */}
       <Text style={styles.label}>Nome do abrigo:</Text>
       <View style={styles.selectInput}>
         <TextInput

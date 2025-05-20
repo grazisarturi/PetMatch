@@ -17,7 +17,6 @@ import MensagensRecebidas from './screens/MensagensRecebidas';
 import CadastroAdotante from './screens/Adotante/CadastroAdotante';
 import Opcoes from './screens/Adotante/Opcoes';
 import TelaInicial from './screens/Adotante/TelaInicial';
-import Filtros from './screens/Adotante/Filtros';
 import DetalhesAnimal from './screens/Adotante/DetalhesAnimal';
 import Chat from './screens/Adotante/Chat';
 import PesquisarDoacoes from './screens/Adotante/PesquisarDoacoes';
@@ -46,7 +45,6 @@ export default function App() {
         <Stack.Screen name="CadastroAdotante" component={CadastroAdotante} />
         <Stack.Screen name="Opcoes" component={Opcoes} />
         <Stack.Screen name="TelaInicial" component={TelaInicial} />
-        <Stack.Screen name="Filtros" component={Filtros} />
         <Stack.Screen name="DetalhesAnimal" component={DetalhesAnimal} />
         <Stack.Screen name="Chat" component={Chat} />
         <Stack.Screen name="PesquisarDoacoes" component={PesquisarDoacoes} />
