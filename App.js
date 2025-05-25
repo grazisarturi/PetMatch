@@ -51,6 +51,7 @@ export default function App() {
         <Stack.Screen name="Doacoes" component={Doacoes} />
         <Stack.Screen name="Clinicas" component={Clinicas} />
         <Stack.Screen name="DetalhesClinica" component={DetalhesClinica} />
+        
 
       </Stack.Navigator>
     </NavigationContainer>
