@@ -27,10 +27,17 @@ export default function PesquisarDoacoes({ navigation }) {
       local: 'R. Paranaguá, 1149 - Bairro São Cristóvão, Cascavel - PR',
       imagem: require('../../images/abrigo-logo.png'),
     },
+
+    {
+      id: '2',
+      nome: 'ABRIGO DE ANIMAIS SÃO FRANCISCO DE ASSIS DE CASCAVEL-PR',
+      local: 'R. Paranaguá, 1149 - Bairro São Cristóvão, Cascavel - PR',
+      imagem: require('../../images/abrigo-logo.png'),
+    },
   ];
 
   const aplicarFiltro = () => {
-
+    // lógica de filtro futura
   };
 
   return (
@@ -42,6 +49,7 @@ export default function PesquisarDoacoes({ navigation }) {
         <Text style={styles.logo}>PetMatch</Text>
         <View style={{ width: 24 }} />
       </View>
+
       <View style={styles.linhaInferior} />
 
       <Text style={styles.titulo}>Pequenos gestos, grandes patinhas felizes 🐾</Text>
@@ -50,7 +58,7 @@ export default function PesquisarDoacoes({ navigation }) {
       <View style={styles.selectInput}>
         <TextInput
           placeholder=""
-          style={{ flex: 1 }}
+          style={styles.textInput}
           value={abrigoSelecionado}
           onChangeText={setAbrigoSelecionado}
         />
@@ -61,7 +69,7 @@ export default function PesquisarDoacoes({ navigation }) {
       <View style={styles.selectInput}>
         <TextInput
           placeholder=""
-          style={{ flex: 1 }}
+          style={styles.textInput}
           value={localizacao}
           onChangeText={setLocalizacao}
         />
@@ -72,7 +80,6 @@ export default function PesquisarDoacoes({ navigation }) {
         <Text style={styles.botaoTexto}>Aplicar</Text>
       </TouchableOpacity>
 
-      {/* Lista de abrigos */}
       <FlatList
         data={abrigos}
         keyExtractor={(item) => item.id}
@@ -83,17 +90,21 @@ export default function PesquisarDoacoes({ navigation }) {
             onPress={() => navigation.navigate('Doacoes', { abrigo: item })}
           >
             <Image source={item.imagem} style={styles.img} />
-            <View>
-              <Text style={styles.nomeAbrigo}>{item.nome}</Text>
+            <View style={styles.cardContent}>
+              <Text style={styles.nomeAbrigo} numberOfLines={1}>{item.nome}</Text>
               <Text style={styles.local}>{item.local}</Text>
             </View>
           </TouchableOpacity>
         )}
       />
 
-      {/* Footer */}
       <View style={styles.footer}>
-        <Ionicons name="home-outline" size={25} color="#fff" onPress={() => navigation.navigate('Opcoes')} />
+        <Ionicons
+          name="home-outline"
+          size={25}
+          color="#fff"
+          onPress={() => navigation.navigate('Opcoes')}
+        />
       </View>
     </View>
   );
@@ -110,29 +121,29 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 50,
     paddingHorizontal: 20,
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
   },
   logo: {
     fontSize: 30,
     fontWeight: 'bold',
-    color: '#1a7f37'
+    color: '#1a7f37',
   },
   linhaInferior: {
     height: 4,
     backgroundColor: '#1a7f37',
-    width: '100%'
+    width: '100%',
   },
   titulo: {
     fontSize: 15,
     fontWeight: 'bold',
     textAlign: 'center',
     marginVertical: 20,
-    paddingHorizontal: 20
+    paddingHorizontal: 20,
   },
   label: {
     marginLeft: 20,
     marginBottom: 5,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   selectInput: {
     flexDirection: 'row',
@@ -142,7 +153,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     paddingHorizontal: 12,
     borderRadius: 8,
-    marginBottom: 10
+    marginBottom: 10,
+  },
+  textInput: {
+    flex: 1,
+    height: 45,
+    paddingVertical: 10,
+    fontSize: 14,
   },
   botao: {
     backgroundColor: '#1a7f37',
@@ -165,22 +182,26 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#2e7d32'
+    borderColor: '#2e7d32',
   },
   img: {
     width: 50,
     height: 50,
     borderRadius: 25,
-    marginRight: 10
+    marginRight: 10,
+  },
+  cardContent: {
+    flex: 1,
+    flexShrink: 1,
   },
   nomeAbrigo: {
     fontWeight: 'bold',
     fontSize: 12,
-    marginBottom: 2
+    marginBottom: 2,
   },
   local: {
     fontSize: 11,
-    color: '#2e7d32'
+    color: '#2e7d32',
   },
   footer: {
     position: 'absolute',
@@ -189,5 +210,5 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#1a7f37',
     alignItems: 'center',
-  }
+  },
 });

@@ -59,23 +59,30 @@ export default function Clinicas({ navigation }) {
 
       <Text style={styles.subtitulo}>Carinho em forma de cuidado 🐾</Text>
 
-      <Text style={styles.label}>Nome do Clínica Veterinária/ Pet Shop:</Text>
-      <TextInput
-        placeholder=""
-        value={nomeFiltro}
-        onChangeText={setNomeFiltro}
-        style={styles.input}
-      />
+      <Text style={styles.label}>Nome da Clínica Veterinária / Pet Shop:</Text>
+      <View style={styles.selectInput}>
+        <TextInput
+          placeholder=""
+          value={nomeFiltro}
+          onChangeText={setNomeFiltro}
+          style={styles.textInput}
+        />
+        <Ionicons name="chevron-down" size={20} color="#1a7f37" />
+      </View>
+
       <Text style={styles.label}>Localização:</Text>
-      <TextInput
-        placeholder=""
-        value={localizacaoFiltro}
-        onChangeText={setLocalizacaoFiltro}
-        style={styles.input}
-      />
+      <View style={styles.selectInput}>
+        <TextInput
+          placeholder=""
+          value={localizacaoFiltro}
+          onChangeText={setLocalizacaoFiltro}
+          style={styles.textInput}
+        />
+        <Ionicons name="chevron-down" size={20} color="#1a7f37" />
+      </View>
 
       <TouchableOpacity style={styles.botao}>
-        <Text style={styles.botaoTexto}>APLICAR</Text>
+        <Text style={styles.botaoTexto}>Aplicar</Text>
       </TouchableOpacity>
 
       <FlatList
@@ -88,7 +95,7 @@ export default function Clinicas({ navigation }) {
           >
             <Image source={item.imagem} style={styles.logoClinica} />
             <View style={{ flex: 1 }}>
-              <Text style={styles.nome}>{item.nome}</Text>
+              <Text style={styles.nome} numberOfLines={1}>{item.nome}</Text>
               <Text style={styles.local}>📍 {item.localizacao}</Text>
             </View>
           </TouchableOpacity>
@@ -110,7 +117,7 @@ export default function Clinicas({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff'},
+  container: { flex: 1, backgroundColor: '#fff' },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -134,28 +141,36 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 14,
     marginBottom: 20,
+    paddingHorizontal: 20,
   },
   label: {
     marginBottom: 5,
     fontWeight: '600',
     marginHorizontal: 16,
   },
-  input: {
-    borderWidth: 1,
+  selectInput: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1.5,
     borderColor: '#1a7f37',
-    backgroundColor: '#b8f0b0',
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 15,
     marginHorizontal: 16,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  textInput: {
+    flex: 1,
+    height: 45,
+    paddingVertical: 10,
+    fontSize: 14,
   },
   botao: {
     backgroundColor: '#1a7f37',
+    marginHorizontal: 100,
     padding: 12,
-    borderRadius: 10,
+    borderRadius: 6,
     alignItems: 'center',
     marginBottom: 20,
-    marginHorizontal: 16,
   },
   botaoTexto: {
     color: '#fff',

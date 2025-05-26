@@ -23,6 +23,7 @@ import PesquisarDoacoes from './screens/Adotante/PesquisarDoacoes';
 import Doacoes from './screens/Adotante/Doacoes';
 import Clinicas from './screens/Adotante/Clinicas';
 import DetalhesClinica from './screens/Adotante/DetalhesClinica';
+import { ScreenStackHeaderSearchBarView } from 'react-native-screens';
 
 const Stack = createNativeStackNavigator();
 
@@ -32,25 +33,26 @@ export default function App() {
       <Stack.Navigator initialRouteName="Login">
 
          {/* Telas Abrigo */}
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Abrigo" component={AbrigoCadastro} />
-        <Stack.Screen name="AbrigoDashboard" component={AbrigoDashboard} />
-        <Stack.Screen name="ListaPets" component={ListaPets} />
-        <Stack.Screen name="CadastroAnimal" component={CadastroAnimal} />
-        <Stack.Screen name="ListaDoacoes" component={ListaDoacoes} />
-        <Stack.Screen name="PedidoDoacao" component={PedidoDoacao} />
-        <Stack.Screen name="Mensagens" component={MensagensRecebidas} />
+        <Stack.Screen
+         name="Login" component={LoginScreen} options={{headerShown: false}} />
+        <Stack.Screen name="Abrigo" component={AbrigoCadastro} options={{headerShown: false}} />
+        <Stack.Screen name="AbrigoDashboard" component={AbrigoDashboard} options={{headerShown: false}} />
+        <Stack.Screen name="ListaPets" component={ListaPets} options={{headerShown: false}} />
+        <Stack.Screen name="CadastroAnimal" component={CadastroAnimal} options={{headerShown: false}} />
+        <Stack.Screen name="ListaDoacoes" component={ListaDoacoes} options={{headerShown: false}} />
+        <Stack.Screen name="PedidoDoacao" component={PedidoDoacao} options={{headerShown: false}} />
+        <Stack.Screen name="Mensagens" component={MensagensRecebidas} options={{headerShown: false}} />
 
         {/* Telas Adotante */}
-        <Stack.Screen name="CadastroAdotante" component={CadastroAdotante} />
-        <Stack.Screen name="Opcoes" component={Opcoes} />
-        <Stack.Screen name="TelaInicial" component={TelaInicial} />
-        <Stack.Screen name="DetalhesAnimal" component={DetalhesAnimal} />
-        <Stack.Screen name="Chat" component={Chat} />
-        <Stack.Screen name="PesquisarDoacoes" component={PesquisarDoacoes} />
-        <Stack.Screen name="Doacoes" component={Doacoes} />
-        <Stack.Screen name="Clinicas" component={Clinicas} />
-        <Stack.Screen name="DetalhesClinica" component={DetalhesClinica} />
+        <Stack.Screen name="CadastroAdotante" component={CadastroAdotante}options={{headerShown: false}} />
+        <Stack.Screen name="Opcoes" component={Opcoes} options={{headerShown: false}} />
+        <Stack.Screen name="TelaInicial" component={TelaInicial} options={{headerShown: false}} />
+        <Stack.Screen name="DetalhesAnimal" component={DetalhesAnimal} options={{headerShown: false}} />
+        <Stack.Screen name="Chat" component={Chat} options={{headerShown: false}} />
+        <Stack.Screen name="PesquisarDoacoes" component={PesquisarDoacoes} options={{headerShown: false}} />
+        <Stack.Screen name="Doacoes" component={Doacoes} options={{headerShown: false}} />
+        <Stack.Screen name="Clinicas" component={Clinicas} options={{headerShown: false}} />
+        <Stack.Screen name="DetalhesClinica" component={DetalhesClinica} options={{headerShown: false}} />
         
 
       </Stack.Navigator>

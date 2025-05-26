@@ -49,7 +49,10 @@ export default function Options({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  container: {
+    flex: 1,
+    backgroundColor: '#fff'
+  },
   header: {
     backgroundColor: '#1a7f37',
     paddingVertical: 85,
@@ -85,7 +88,7 @@ const styles = StyleSheet.create({
   },
   logout: {
     flexDirection: 'row',
-    marginTop: 175,
+    marginTop: 20, 
     alignItems: 'center'
   },
   logoutText: {

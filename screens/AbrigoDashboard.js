@@ -1,6 +1,16 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { MaterialCommunityIcons, FontAwesome5, Ionicons } from '@expo/vector-icons';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+} from 'react-native';
+import {
+  MaterialCommunityIcons,
+  FontAwesome5,
+  Ionicons,
+} from '@expo/vector-icons';
 
 export default function AbrigoDashboard({ navigation }) {
   return (
@@ -9,17 +19,16 @@ export default function AbrigoDashboard({ navigation }) {
         <Text style={styles.logo}>PetMatch</Text>
       </View>
 
-      <View style={styles.content}>
+      <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.question}>O que está buscando hoje?</Text>
 
         <TouchableOpacity
-            style={styles.card}
-            onPress={() => navigation.navigate('ListaPets')}
+          style={styles.card}
+          onPress={() => navigation.navigate('ListaPets')}
         >
-        <MaterialCommunityIcons name="paw" size={24} color="#black" />
-        <Text style={styles.cardText}>Cadastrar pet para adoção</Text>
+          <MaterialCommunityIcons name="paw" size={24} color="#000" />
+          <Text style={styles.cardText}>Cadastrar pet para adoção</Text>
         </TouchableOpacity>
-
 
         <TouchableOpacity
           style={styles.card}
@@ -29,22 +38,22 @@ export default function AbrigoDashboard({ navigation }) {
           <Text style={styles.cardText}>Adicionar pedido de doação</Text>
         </TouchableOpacity>
 
-
-        <TouchableOpacity style={styles.card}
+        <TouchableOpacity
+          style={styles.card}
           onPress={() => navigation.navigate('Mensagens')}
-          >
-          <Ionicons name="chatbubbles" size={22} color="#000"/>
+        >
+          <Ionicons name="chatbubbles" size={22} color="#000" />
           <Text style={styles.cardText}>Mensagens recebidas</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-            style={styles.logout}
-            onPress={() => navigation.navigate('Login')}
+          style={styles.logout}
+          onPress={() => navigation.navigate('Login')}
         >
-        <Ionicons name="log-out-outline" size={20} color="red" />
-        <Text style={styles.logoutText}>Sair da conta</Text>
+          <Ionicons name="log-out-outline" size={20} color="red" />
+          <Text style={styles.logoutText}>Sair da conta</Text>
         </TouchableOpacity>
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -54,20 +63,20 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: '#1a7f37',
     paddingVertical: 85,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   logo: {
     fontSize: 30,
     fontWeight: 'bold',
-    color: '#fff'
+    color: '#fff',
   },
   content: {
-    padding: 20
+    padding: 20,
   },
   question: {
     fontSize: 18,
     marginBottom: 30,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   card: {
     borderWidth: 1.5,
@@ -77,21 +86,21 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10
+    gap: 10,
   },
   cardText: {
     color: '#1a7f37',
     fontWeight: 'bold',
-    fontSize: 16
+    fontSize: 16,
   },
   logout: {
     flexDirection: 'row',
-    marginTop: 175,
-    alignItems: 'center'
+    marginTop: 30, 
+    alignItems: 'center',
   },
   logoutText: {
     color: 'red',
     fontWeight: 'bold',
-    marginLeft: 6
-  }
+    marginLeft: 6,
+  },
 });

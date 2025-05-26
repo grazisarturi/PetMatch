@@ -1,51 +1,69 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+} from 'react-native';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.logo}>PetMatch</Text>
-      </View>
-
-      <View style={styles.form}>
-        <TextInput
-          style={styles.input}
-          placeholder="E-mail"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Senha"
-          value={senha}
-          onChangeText={setSenha}
-          secureTextEntry
-        />
-
-        <TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate('AbrigoDashboard')}>
-          <Text style={styles.loginButtonText}>Login</Text>
-        </TouchableOpacity>
-
-        <View style={styles.dividerContainer}>
-          <View style={styles.line} />
-          <Text style={styles.or}>ou</Text>
-          <View style={styles.line} />
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.logo}>PetMatch</Text>
         </View>
 
-        <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.navigate('CadastroAdotante')}>
-          <Text style={styles.secondaryButtonText}>Cadastrar como adotante</Text>
-        </TouchableOpacity>
+        <View style={styles.form}>
+          <TextInput
+            style={styles.input}
+            placeholder="E-mail"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Senha"
+            value={senha}
+            onChangeText={setSenha}
+            secureTextEntry
+          />
 
-        <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.navigate('Abrigo')}>
-          <Text style={styles.secondaryButtonText}>Cadastrar como abrigo</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.loginButton}
+            onPress={() => navigation.navigate('AbrigoDashboard')}
+          >
+            <Text style={styles.loginButtonText}>Login</Text>
+          </TouchableOpacity>
+
+          <View style={styles.dividerContainer}>
+            <View style={styles.line} />
+            <Text style={styles.or}>ou</Text>
+            <View style={styles.line} />
+          </View>
+
+          <TouchableOpacity
+            style={styles.secondaryButton}
+            onPress={() => navigation.navigate('CadastroAdotante')}
+          >
+            <Text style={styles.secondaryButtonText}>Cadastrar como adotante</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.secondaryButton}
+            onPress={() => navigation.navigate('Abrigo')}
+          >
+            <Text style={styles.secondaryButtonText}>Cadastrar como abrigo</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
