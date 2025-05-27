@@ -12,6 +12,8 @@ import {
   Ionicons,
 } from '@expo/vector-icons';
 
+
+
 export default function AbrigoDashboard({ navigation }) {
   return (
     <View style={styles.container}>
