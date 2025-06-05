@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import Cabecalho1 from '../components/Cabecalho1';
 
 export default function AbrigoCadastro({ navigation }) {
   const [nome, setNome] = useState('');
@@ -10,9 +11,7 @@ export default function AbrigoCadastro({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.logo}>PetMatch</Text>
-      </View>
+     <Cabecalho1/>
 
       <View style={styles.form}>
         <TextInput
@@ -21,6 +20,7 @@ export default function AbrigoCadastro({ navigation }) {
           value={nome}
           onChangeText={setNome}
         />
+
         <TextInput
           style={styles.input}
           placeholder="E-mail"
@@ -61,17 +61,6 @@ export default function AbrigoCadastro({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
-  header: {
-    backgroundColor: '#1a7f37',
-    paddingVertical: 85,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  logo: {
-    fontSize: 35,
-    fontWeight: 'bold',
-    color: '#fff'
-  },
   form: {
     padding: 20,
     marginTop: 20

@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import Cabecalho2 from '../../components/Cabecalho2';
 
 export default function DetalhesAnimal({ route, navigation }) {
   const { petId } = route.params;
@@ -22,17 +23,8 @@ export default function DetalhesAnimal({ route, navigation }) {
 
   return (
     <View style={styles.container}>
-      {/* Cabeçalho */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="#1a7f37" />
-        </TouchableOpacity>
-        <Text style={styles.logo}>PetMatch</Text>
-        <View style={{ width: 24 }} />
-      </View>
-      <View style={styles.linhaInferior} />
+      <Cabecalho2 navigation={navigation} />
 
-      {/* Conteúdo */}
       <ScrollView contentContainerStyle={styles.content}>
         <Image source={petData.imagem} style={styles.image} />
         
@@ -52,7 +44,6 @@ export default function DetalhesAnimal({ route, navigation }) {
         <Text style={styles.detail}><Text style={styles.bold}>Descrição:</Text> {petData.descricao}</Text>
       </ScrollView>
 
-      {/* Rodapé */}
         <View style={styles.footer}>
           <TouchableOpacity onPress={() => navigation.navigate('Opcoes')}>
             <Ionicons name="home-outline" size={26} color="#fff" />
@@ -73,25 +64,6 @@ export default function DetalhesAnimal({ route, navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
-  header: {
-    paddingTop: 50,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
-    backgroundColor: '#fff',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  },
-  logo: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#1a7f37'
-  },
-  linhaInferior: {
-    height: 4,
-    backgroundColor: '#1a7f37',
-    width: '100%'
-  },
   content: {
     padding: 20
   },

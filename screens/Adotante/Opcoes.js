@@ -1,13 +1,12 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons, FontAwesome5, Ionicons } from '@expo/vector-icons';
+import Cabecalho1 from '../../components/Cabecalho1';
 
 export default function Options({ navigation }) {
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.logo}>PetMatch</Text>
-      </View>
+      <Cabecalho1/>
 
       <View style={styles.content}>
         <Text style={styles.question}>O que está buscando hoje?</Text>
@@ -52,16 +51,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff'
-  },
-  header: {
-    backgroundColor: '#1a7f37',
-    paddingVertical: 85,
-    alignItems: 'center'
-  },
-  logo: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    color: '#fff'
   },
   content: {
     padding: 20

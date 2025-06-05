@@ -9,6 +9,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import Cabecalho2 from '../../components/Cabecalho2';
 
 const doacoes = [
   {
@@ -40,14 +41,7 @@ const doacoes = [
 export default function Doacoes({ navigation }) {
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="#1a7f37" />
-        </TouchableOpacity>
-        <Text style={styles.logo}>PetMatch</Text>
-        <View style={{ width: 24 }} />
-      </View>
-      <View style={styles.linhaInferior} />
+      <Cabecalho2 navigation={navigation} />
 
       <Image
         source={require('../../images/abrigo-capa.jpg')}

@@ -73,21 +73,21 @@ export default function MensagensRecebidas({ navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    backgroundColor: '#fff', 
+    paddingVertical: 30,
     justifyContent: 'space-between',
-    paddingVertical: 50,
-    paddingHorizontal: 20
+    alignItems: 'center',
+    flexDirection: 'row',
+    paddingHorizontal: 20,
   },
   title: {
-    fontSize: 24,
+    fontSize: 35,
     fontWeight: 'bold',
-    color: '#1a7f37'
+    color: '#1a7f37',
   },
   linhaInferior: {
-    height: 4,
+    height: 7,
     backgroundColor: '#1a7f37',
-    width: '100%'
   },
   listContainer: {
     padding: 20

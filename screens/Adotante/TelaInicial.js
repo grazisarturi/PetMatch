@@ -54,13 +54,13 @@ export default function Home({ navigation }) {
 
   return (
     <View style={styles.container}>
-      {/* Header com botão de voltar e nome do app */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="#1a7f37" />
         </TouchableOpacity>
-        <Text style={styles.appName}>Pet Match</Text>
+        <Text style={styles.appName}>PetMatch</Text>
       </View>
+
 
       <Text style={styles.title}>Adote um amor, transforme uma vida!</Text>
 
@@ -148,22 +148,28 @@ export default function Home({ navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff', paddingTop: 40 },
 
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 15,
-    marginBottom: 10,
+ header: {
+  height: 60,
+  justifyContent: 'center',
+  alignItems: 'center',
+  position: 'relative',
+  marginBottom: 10,
   },
+
   backButton: {
-    padding: 5,
-    marginRight: 10,
+    position: 'absolute',
+    left: 20,
+    zIndex: 1,
   },
+
   appName: {
-    fontSize: 30,
+    fontSize: 35,
     fontWeight: 'bold',
     color: '#1a7f37',
-    marginLeft: 70,
+    textAlign: 'center',
+    width: '100%',
   },
+
 
   title: {
     marginTop: 30,

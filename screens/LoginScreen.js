@@ -1,13 +1,7 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-} from 'react-native';
+import {View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView,} from 'react-native';
 
+import Cabecalho1 from '../components/Cabecalho1';
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -15,9 +9,7 @@ export default function LoginScreen({ navigation }) {
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
       <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.logo}>PetMatch</Text>
-        </View>
+        <Cabecalho1/>
 
         <View style={styles.form}>
           <TextInput
@@ -69,17 +61,6 @@ export default function LoginScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#ffffff' },
-  header: {
-    backgroundColor: '#1a7f37',
-    paddingVertical: 85,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  logo: {
-    fontSize: 35,
-    fontWeight: 'bold',
-    color: '#ffffff',
-  },
   form: {
     padding: 20,
     marginTop: 30,

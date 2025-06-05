@@ -9,6 +9,7 @@ import {
   Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import Cabecalho2 from '../../components/Cabecalho2';
 
 const clinicas = [
   {
@@ -47,15 +48,7 @@ export default function Clinicas({ navigation }) {
 
   return (
     <View style={styles.container}>
-      {/* Cabeçalho */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="#1a7f37" />
-        </TouchableOpacity>
-        <Text style={styles.logo}>PetMatch</Text>
-        <View style={{ width: 24 }} />
-      </View>
-      <View style={styles.linhaInferior} />
+      <Cabecalho2 navigation={navigation} />      
 
       <Text style={styles.subtitulo}>Carinho em forma de cuidado 🐾</Text>
 

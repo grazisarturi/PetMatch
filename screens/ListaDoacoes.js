@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import Cabecalho2 from '../components/Cabecalho2';
 
 export default function ListaDoacoes({ navigation }) {
   const doacoes = [
@@ -14,14 +15,7 @@ export default function ListaDoacoes({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="#1a7f37" />
-        </TouchableOpacity>
-        <Text style={styles.logo}>PetMatch</Text>
-        <View style={{ width: 24 }} />
-      </View>
-      <View style={styles.linhaInferior} />
+      <Cabecalho2 navigation={navigation} />
 
       <ScrollView contentContainerStyle={styles.listContainer}>
         {doacoes.map((d) => (
@@ -62,23 +56,6 @@ export default function ListaDoacoes({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 50,
-    paddingHorizontal: 20
-  },
-  logo: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1a7f37'
-  },
-  linhaInferior: {
-    height: 4,
-    backgroundColor: '#1a7f37',
-    width: '100%'
-  },
   listContainer: {
     padding: 20
   },

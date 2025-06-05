@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import Cabecalho2 from '../../components/Cabecalho2';
 
 const itensNecessarios = [
   {
@@ -28,16 +29,8 @@ export default function DetalhesClinica({ route, navigation }) {
 
   return (
     <View style={styles.container}>
-      {/* Cabeçalho */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="#1a7f37" />
-        </TouchableOpacity>
-        <Text style={styles.logo}>PetMatch</Text>
-        <View style={{ width: 24 }} />
-      </View>
-      <View style={styles.linhaInferior} />
-
+      <Cabecalho2 navigation={navigation} />
+      
       {/* Imagem da clínica */}
       <View style={styles.clinicaImagemContainer}>
         <Image
@@ -91,23 +84,6 @@ export default function DetalhesClinica({ route, navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 50,
-    alignItems: 'center',
-  },
-  logo: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    color: '#1a7f37',
-  },
-  linhaInferior: {
-    height: 4,
-    backgroundColor: '#1a7f37',
-    width: '100%',
-  },
   clinicaImagemContainer: {
     position: 'relative',
     alignItems: 'center',

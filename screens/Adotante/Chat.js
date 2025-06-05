@@ -1,16 +1,7 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  FlatList,
-  ImageBackground,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
+import {View,Text,TextInput,TouchableOpacity,StyleSheet,FlatList,ImageBackground,KeyboardAvoidingView,Platform,} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import Cabecalho2 from '../../components/Cabecalho2';
 
 export default function Chat({ route, navigation }) {
   const { nomeContato = 'ABRIGO DE ANIMAIS SÃO FRANCISCO DE ASSIS DE CASCAVEL-PR' } = route.params || {};
@@ -36,17 +27,8 @@ export default function Chat({ route, navigation }) {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={90}
     >
-      {/* Cabeçalho */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="#1a7f37" />
-        </TouchableOpacity>
-        <Text style={styles.logo}>PetMatch</Text>
-        <View style={{ width: 24 }} />
-      </View>
-      <View style={styles.linhaInferior} />
+      <Cabecalho2 navigation={navigation} />
 
-      {/* Nome do abrigo e do usuário */}
       <View style={styles.topInfo}>
         <ImageBackground
           source={require('../../images/abrigo-logo.png')}
@@ -56,7 +38,6 @@ export default function Chat({ route, navigation }) {
         <Text style={styles.abrigoNome}>{nomeContato}</Text>
       </View>
 
-      {/* Chat com fundo personalizado */}
       <ImageBackground
         source={require('../../images/bg-patinhas.png')}
         style={styles.chatBackground}
@@ -78,7 +59,6 @@ export default function Chat({ route, navigation }) {
         />
       </ImageBackground>
 
-      {/* Área de envio */}
       <View style={styles.areaInput}>
         <TextInput
           style={styles.input}
@@ -91,7 +71,6 @@ export default function Chat({ route, navigation }) {
         </TouchableOpacity>
       </View>
 
-      {/* Rodapé */}
       <View style={styles.footer}>
         <Ionicons
           name="home-outline"

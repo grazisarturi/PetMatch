@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import Cabecalho1 from '../../components/Cabecalho1';
 
 export default function CadastroAdotante({ navigation }) {
   const [nome, setNome] = useState('');
@@ -14,9 +15,7 @@ export default function CadastroAdotante({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.logo}>PetMatch</Text>
-      </View>
+      <Cabecalho1/>
 
       <ScrollView contentContainerStyle={styles.form}>
         <TextInput
@@ -55,17 +54,6 @@ export default function CadastroAdotante({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
-  header: {
-    backgroundColor: '#1a7f37',
-    paddingVertical: 85,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  logo: {
-    fontSize: 35,
-    fontWeight: 'bold',
-    color: '#ffffff',
-  },
   form: {
     padding: 20,
   },
