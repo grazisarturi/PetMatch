@@ -1,17 +1,49 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Cabecalho2 from '../components/Cabecalho2';
+import { firebase } from '../firebase';
+
+const db = firebase.firestore();
 
 export default function ListaDoacoes({ navigation }) {
-  const doacoes = [
-    { id: 1, item: 'Ração', quantidade: '20 kg', abrigo: 'Abrigo São Francisco' },
-    { id: 2, item: 'Vermífugos', quantidade: '10 caixas', abrigo: 'Abrigo São Francisco' },
-    { id: 3, item: 'Produtos de limpeza', quantidade: '5 produtos', abrigo: 'Abrigo São Francisco' }
-  ];
+  const [doacoes, setDoacoes] = useState([]);
 
-  const editar = (item) => Alert.alert('Editar', `Editar doação: ${item}`);
-  const excluir = (item) => Alert.alert('Excluir', `Excluir doação: ${item}`);
+  useEffect(() => {
+    const unsubscribe = db.collection('doacoes').onSnapshot(snapshot => {
+      const lista = [];
+      snapshot.forEach(doc => {
+        lista.push({ id: doc.id, ...doc.data() });
+      });
+      setDoacoes(lista);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const editar = (doacao) => {
+    navigation.navigate('EditarDoacao', { doacao });
+  };
+
+  const excluir = (id) => {
+    Alert.alert('Excluir', 'Deseja excluir esta doação?', [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Excluir',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await db.collection('doacoes').doc(id).delete();
+            Alert.alert('Sucesso', 'Doação excluída!');
+          } catch (error) {
+            console.error('Erro ao excluir:', error);
+            Alert.alert('Erro', 'Erro ao excluir a doação.');
+          }
+        }
+      }
+    ]);
+  };
+
 
   return (
     <View style={styles.container}>
@@ -26,10 +58,11 @@ export default function ListaDoacoes({ navigation }) {
               <Text style={styles.info}>{d.abrigo}</Text>
             </View>
             <View style={styles.botoes}>
-              <TouchableOpacity style={styles.botaoEditar} onPress={() => editar(d.item)}>
+              <TouchableOpacity style={styles.botaoEditar} onPress={() => editar(d)}>
                 <Text style={styles.textoEditar}>Editar</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.botaoExcluir} onPress={() => excluir(d.item)}>
+
+              <TouchableOpacity style={styles.botaoExcluir} onPress={() => excluir(d.id)}>
                 <Text style={styles.textoExcluir}>Excluir</Text>
               </TouchableOpacity>
             </View>
@@ -46,9 +79,7 @@ export default function ListaDoacoes({ navigation }) {
       </ScrollView>
 
       <View style={styles.footer}>
-        <Ionicons name="home-outline" size={24} color="#fff" 
-        onPress={() => navigation.navigate('AbrigoDashboard')}
-        />
+        <Ionicons name="home-outline" size={24} color="#fff" onPress={() => navigation.navigate('AbrigoDashboard')} />
       </View>
     </View>
   );

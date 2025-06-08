@@ -1,25 +1,25 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  Image,
-  TouchableOpacity,
-  Animated,
-  Dimensions,
-  TextInput,
-  Platform,
-  ScrollView,
+  View, Text, StyleSheet, FlatList, Image, TouchableOpacity, Animated,
+  Dimensions, TextInput, ScrollView
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
+import { firebase } from '../../firebase';
 
 const { width } = Dimensions.get('window');
 
 export default function Home({ navigation }) {
   const [showFilters, setShowFilters] = useState(false);
   const slideAnim = useRef(new Animated.Value(-width)).current;
+
+  const [idade, setIdade] = useState('');
+  const [localizacao, setLocalizacao] = useState('');
+  const [especie, setEspecie] = useState('');
+  const [sexo, setSexo] = useState('');
+  const [porte, setPorte] = useState('');
+
+  const [pets, setPets] = useState([]);
 
   const toggleFilters = () => {
     Animated.timing(slideAnim, {
@@ -29,22 +29,26 @@ export default function Home({ navigation }) {
     }).start(() => setShowFilters(!showFilters));
   };
 
-  const [idade, setIdade] = useState('');
-  const [localizacao, setLocalizacao] = useState('');
-  const [especie, setEspecie] = useState('');
-  const [sexo, setSexo] = useState('');
-  const [porte, setPorte] = useState('');
-
-  const pets = [
-    { id: '1', nome: 'Fred', imagem: require('../../images/fred.jpeg') },
-    { id: '2', nome: 'Lili', imagem: require('../../images/lili.jpeg') },
-    { id: '3', nome: 'Nala', imagem: require('../../images/nala.jpg') },
-    { id: '4', nome: 'Mel', imagem: require('../../images/mel.jpg') },
-  ];
+  useEffect(() => {
+    const fetchPets = async () => {
+      try {
+        const snapshot = await firebase.firestore().collection('animais').get();
+        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setPets(data);
+      } catch (error) {
+        console.error('Erro ao buscar animais:', error);
+      }
+    };
+    fetchPets();
+  }, []);
 
   const renderItem = ({ item }) => (
     <View style={styles.card}>
-      <Image source={item.imagem} style={styles.image} />
+      <Image
+        source={{ uri: 'https://cdn-icons-png.flaticon.com/512/616/616408.png' }}
+        style={styles.image}
+      />
+
       <Text style={styles.name}>{item.nome}</Text>
       <TouchableOpacity onPress={() => navigation.navigate('DetalhesAnimal', { petId: item.id })}>
         <Text style={styles.link}>Conhecer</Text>
@@ -60,7 +64,6 @@ export default function Home({ navigation }) {
         </TouchableOpacity>
         <Text style={styles.appName}>PetMatch</Text>
       </View>
-
 
       <Text style={styles.title}>Adote um amor, transforme uma vida!</Text>
 
@@ -86,54 +89,32 @@ export default function Home({ navigation }) {
           <Text style={styles.filterTitle}>Filtros Avançados</Text>
 
           <Text style={styles.label}>Idade Aproximada:</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Ex: 1 ano"
-            value={idade}
-            onChangeText={setIdade}
-          />
+          <TextInput style={styles.input} placeholder="Ex: 1 ano" value={idade} onChangeText={setIdade} />
 
           <Text style={styles.label}>Localização:</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Cidade"
-            value={localizacao}
-            onChangeText={setLocalizacao}
-          />
+          <TextInput style={styles.input} placeholder="Cidade" value={localizacao} onChangeText={setLocalizacao} />
 
           <Text style={styles.label}>Espécie:</Text>
-          <Picker
-            selectedValue={especie}
-            onValueChange={(value) => setEspecie(value)}
-            style={styles.picker}
-          >
+          <Picker selectedValue={especie} onValueChange={(value) => setEspecie(value)} style={styles.picker}>
             <Picker.Item label="Selecione..." value="" />
-            <Picker.Item label="Cão" value="cao" />
-            <Picker.Item label="Gato" value="gato" />
-            <Picker.Item label="Outro" value="outro" />
+            <Picker.Item label="Cão" value="Cachorro" />
+            <Picker.Item label="Gato" value="Gato" />
+            <Picker.Item label="Outro" value="Outro" />
           </Picker>
 
           <Text style={styles.label}>Sexo:</Text>
-          <Picker
-            selectedValue={sexo}
-            onValueChange={(value) => setSexo(value)}
-            style={styles.picker}
-          >
+          <Picker selectedValue={sexo} onValueChange={(value) => setSexo(value)} style={styles.picker}>
             <Picker.Item label="Selecione..." value="" />
-            <Picker.Item label="Macho" value="macho" />
-            <Picker.Item label="Fêmea" value="femea" />
+            <Picker.Item label="Macho" value="Macho" />
+            <Picker.Item label="Fêmea" value="Fêmea" />
           </Picker>
 
           <Text style={styles.label}>Porte:</Text>
-          <Picker
-            selectedValue={porte}
-            onValueChange={(value) => setPorte(value)}
-            style={styles.picker}
-          >
+          <Picker selectedValue={porte} onValueChange={(value) => setPorte(value)} style={styles.picker}>
             <Picker.Item label="Selecione..." value="" />
-            <Picker.Item label="Pequeno" value="pequeno" />
-            <Picker.Item label="Médio" value="medio" />
-            <Picker.Item label="Grande" value="grande" />
+            <Picker.Item label="Pequeno" value="Pequeno" />
+            <Picker.Item label="Médio" value="Médio" />
+            <Picker.Item label="Grande" value="Grande" />
           </Picker>
 
           <TouchableOpacity style={styles.applyButton} onPress={toggleFilters}>
@@ -147,21 +128,18 @@ export default function Home({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff', paddingTop: 40 },
-
- header: {
-  height: 60,
-  justifyContent: 'center',
-  alignItems: 'center',
-  position: 'relative',
-  marginBottom: 10,
+  header: {
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+    marginBottom: 10,
   },
-
   backButton: {
     position: 'absolute',
     left: 20,
     zIndex: 1,
   },
-
   appName: {
     fontSize: 35,
     fontWeight: 'bold',
@@ -169,8 +147,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     width: '100%',
   },
-
-
   title: {
     marginTop: 30,
     fontSize: 18,
@@ -180,7 +156,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     paddingVertical: 12,
   },
-
   list: {
     padding: 10,
     paddingBottom: 100,
@@ -206,7 +181,6 @@ const styles = StyleSheet.create({
     color: '#1a7f37',
     fontWeight: 'bold',
   },
-
   footer: {
     position: 'absolute',
     bottom: 0,
@@ -217,7 +191,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
   },
-
   filterPanel: {
     position: 'absolute',
     top: 0,
