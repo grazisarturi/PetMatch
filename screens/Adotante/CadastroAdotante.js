@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import Cabecalho1 from '../../components/Cabecalho1';
+import { firebase } from '../../firebase';
+const db = firebase.firestore();
 
 export default function CadastroAdotante({ navigation }) {
   const [nome, setNome] = useState('');
@@ -8,10 +10,31 @@ export default function CadastroAdotante({ navigation }) {
   const [cpf, setCpf] = useState('');
   const [senha, setSenha] = useState('');
 
-  const handleCadastro = () => {
-    Alert.alert('Cadastro', 'Adotante cadastrado com sucesso!');
-    navigation.navigate('Login');
+  const handleCadastro = async () => {
+    if (!nome || !email || !cpf || !senha) {
+      Alert.alert('Erro', 'Por favor, preencha todos os campos.');
+      return;
+    }
+
+    try {
+      const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, senha);
+      const userId = userCredential.user.uid;
+
+      await db.collection('adotantes').doc(userId).set({
+        nome,
+        email,
+        cpf,
+        criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+
+      Alert.alert('Sucesso', 'Adotante cadastrado com sucesso!');
+      navigation.navigate('Login');
+    } catch (error) {
+      console.error('Erro no cadastro do adotante:', error);
+      Alert.alert('Erro', 'Não foi possível cadastrar. Verifique se o e-mail já foi usado.');
+    }
   };
+
 
   return (
     <View style={styles.container}>
@@ -44,7 +67,7 @@ export default function CadastroAdotante({ navigation }) {
           onChangeText={setSenha}
         />
 
-        <TouchableOpacity style={styles.cadastrarButton} onPress={() => navigation.navigate('Opcoes')}>
+        <TouchableOpacity style={styles.cadastrarButton} onPress={handleCadastro}>
           <Text style={styles.cadastrarButtonText}>Cadastrar</Text>
         </TouchableOpacity>
       </ScrollView>

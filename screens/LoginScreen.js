@@ -1,15 +1,57 @@
 import React, { useState } from 'react';
-import {View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView,} from 'react-native';
-
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Alert,
+} from 'react-native';
 import Cabecalho1 from '../components/Cabecalho1';
+import { firebase } from '../firebase';
+const db = firebase.firestore();
+
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
 
+  const handleLogin = async () => {
+    if (!email || !senha) {
+      Alert.alert('Erro', 'Preencha todos os campos!');
+      return;
+    }
+
+    try {
+      const userCredential = await firebase.auth().signInWithEmailAndPassword(email, senha);
+      const userId = userCredential.user.uid;
+
+      // Tentar achar o usuário como abrigo
+      const abrigoDoc = await db.collection('abrigos').doc(userId).get();
+      if (abrigoDoc.exists) {
+        navigation.navigate('AbrigoDashboard');
+        return;
+      }
+
+      // Se não for abrigo, verificar se é adotante
+      const adotanteDoc = await db.collection('adotantes').doc(userId).get();
+      if (adotanteDoc.exists) {
+        navigation.navigate('Opcoes'); // tela inicial do adotante
+        return;
+      }
+
+      // Se não for nenhum dos dois
+      Alert.alert('Erro', 'Usuário não classificado como abrigo ou adotante.');
+    } catch (error) {
+      console.log('Erro ao fazer login:', error);
+      Alert.alert('Erro', 'Credenciais inválidas.');
+    }
+  };
+
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
       <View style={styles.container}>
-        <Cabecalho1/>
+        <Cabecalho1 />
 
         <View style={styles.form}>
           <TextInput
@@ -27,10 +69,7 @@ export default function LoginScreen({ navigation }) {
             secureTextEntry
           />
 
-          <TouchableOpacity
-            style={styles.loginButton}
-            onPress={() => navigation.navigate('AbrigoDashboard')}
-          >
+          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
             <Text style={styles.loginButtonText}>Login</Text>
           </TouchableOpacity>
 

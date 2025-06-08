@@ -1,13 +1,7 @@
 import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  Switch,
-  Alert
+  View, Text, TextInput, StyleSheet,
+  TouchableOpacity, ScrollView, Switch, Alert
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Cabecalho2 from '../components/Cabecalho2';
@@ -26,12 +20,7 @@ export default function CadastroAnimal({ navigation }) {
   const [localizacao, setLocalizacao] = useState('');
   const [castrado, setCastrado] = useState(false);
 
-  const handleCadastrar = async () => {
-    if (!nome || !especie || !idade || !localizacao) {
-      Alert.alert('Erro', 'Preencha todos os campos obrigatórios!');
-      return;
-    }
-
+  const cadastrarAnimal = async () => {
     try {
       await db.collection('animais').add({
         nome,
@@ -42,11 +31,12 @@ export default function CadastroAnimal({ navigation }) {
         porte,
         descricao,
         localizacao,
-        castrado
+        castrado,
+        imagem: 'https://via.placeholder.com/100'
       });
 
       Alert.alert('Sucesso', 'Animal cadastrado com sucesso!');
-      navigation.navigate('AbrigoDashboard'); // ou outra tela que preferir
+      navigation.navigate('AbrigoDashboard');
     } catch (error) {
       console.error('Erro ao cadastrar animal:', error);
       Alert.alert('Erro', 'Não foi possível cadastrar o animal.');
@@ -56,82 +46,32 @@ export default function CadastroAnimal({ navigation }) {
   return (
     <View style={styles.container}>
       <Cabecalho2 navigation={navigation} />
-
       <ScrollView contentContainerStyle={styles.form}>
         <TouchableOpacity style={styles.fotoBox}>
-          <Ionicons name="camera-outline" size={32} color="#666" />
-          <Text style={styles.fotoText}>Adicionar Foto</Text>
+          <Ionicons name="camera" size={28} color="#888" />
+          <Text style={styles.fotoTexto}>Adicionar Foto</Text>
         </TouchableOpacity>
 
-        <View style={styles.row}>
-          <TextInput
-            style={styles.input}
-            placeholder="Nome"
-            value={nome}
-            onChangeText={setNome}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Espécie"
-            value={especie}
-            onChangeText={setEspecie}
-          />
-        </View>
-
-        <View style={styles.row}>
-          <TextInput
-            style={styles.input}
-            placeholder="Raça"
-            value={raca}
-            onChangeText={setRaca}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Idade"
-            value={idade}
-            onChangeText={setIdade}
-          />
-        </View>
-
-        <View style={styles.row}>
-          <TextInput
-            style={styles.input}
-            placeholder="Sexo"
-            value={sexo}
-            onChangeText={setSexo}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Porte"
-            value={porte}
-            onChangeText={setPorte}
-          />
-        </View>
-
-        <TextInput
-          style={styles.inputFull}
-          placeholder="Descrição"
-          multiline
-          value={descricao}
-          onChangeText={setDescricao}
-        />
-
-        <TextInput
-          style={styles.inputFull}
-          placeholder="Localização"
-          value={localizacao}
-          onChangeText={setLocalizacao}
-        />
+        <TextInput style={styles.input} placeholder="Nome" value={nome} onChangeText={setNome} />
+        <TextInput style={styles.input} placeholder="Espécie" value={especie} onChangeText={setEspecie} />
+        <TextInput style={styles.input} placeholder="Raça" value={raca} onChangeText={setRaca} />
+        <TextInput style={styles.input} placeholder="Idade" value={idade} onChangeText={setIdade} />
+        <TextInput style={styles.input} placeholder="Sexo" value={sexo} onChangeText={setSexo} />
+        <TextInput style={styles.input} placeholder="Porte" value={porte} onChangeText={setPorte} />
+        <TextInput style={styles.input} placeholder="Descrição" value={descricao} onChangeText={setDescricao} multiline />
+        <TextInput style={styles.input} placeholder="Localização" value={localizacao} onChangeText={setLocalizacao} />
 
         <View style={styles.switchContainer}>
           <Text style={styles.switchLabel}>Castrado</Text>
           <Switch value={castrado} onValueChange={setCastrado} />
         </View>
 
-        <TouchableOpacity style={styles.botaoCadastrar} onPress={handleCadastrar}>
-          <Text style={styles.botaoTexto}>Cadastrar animal</Text>
+        {/* Botão Cadastrar dentro do ScrollView */}
+        <TouchableOpacity style={styles.button} onPress={cadastrarAnimal}>
+          <Text style={styles.buttonText}>Cadastrar animal</Text>
         </TouchableOpacity>
       </ScrollView>
+
 
       <View style={styles.footer}>
         <Ionicons
@@ -147,59 +87,51 @@ export default function CadastroAnimal({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
-  form: { padding: 20 },
+  form: { padding: 20, paddingBottom: 140 },
   fotoBox: {
+    backgroundColor: '#ddd',
     height: 100,
-    backgroundColor: '#e6e6e6',
-    borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 25
+    borderRadius: 10,
+    marginBottom: 20
   },
-  fotoText: { color: '#666', marginTop: 5 },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 12
-  },
+  fotoTexto: { color: '#555', marginTop: 6 },
   input: {
-    backgroundColor: '#f2f2f2',
-    borderRadius: 6,
-    padding: 12,
-    flex: 1,
-    marginRight: 8
-  },
-  inputFull: {
-    backgroundColor: '#f2f2f2',
-    borderRadius: 6,
+    backgroundColor: '#e6e6e6',
+    borderRadius: 8,
     padding: 12,
     marginBottom: 12
   },
   switchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 20
+    marginBottom: 30
   },
   switchLabel: {
-    marginRight: 10,
-    fontSize: 16
+    fontSize: 16,
+    fontWeight: '500',
+    marginRight: 10
   },
-  botaoCadastrar: {
+  button: {
     backgroundColor: '#1a7f37',
-    padding: 14,
-    borderRadius: 6,
+    paddingVertical: 16,
+    borderRadius: 10,
     alignItems: 'center',
-    marginTop: 10
+    marginTop: 20
   },
-  botaoTexto: {
-    color: '#fff',
-    fontWeight: 'bold'
+
+  buttonText: { 
+    color: '#fff', 
+    fontWeight: 'bold', 
+    fontSize: 16 
   },
   footer: {
     backgroundColor: '#1a7f37',
     alignItems: 'center',
-    padding: 20,
-    marginBottom: 10
+    padding: 18,
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
   }
 });

@@ -31,7 +31,6 @@ export default function DetalhesClinica({ route, navigation }) {
     <View style={styles.container}>
       <Cabecalho2 navigation={navigation} />
       
-      {/* Imagem da clínica */}
       <View style={styles.clinicaImagemContainer}>
         <Image
           source={require('../../images/capa-clinica.jpg')}

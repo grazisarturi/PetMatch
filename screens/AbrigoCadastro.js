@@ -18,22 +18,25 @@ export default function AbrigoCadastro({ navigation }) {
     }
 
     try {
-      await db.collection('abrigos').add({
+      const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, senha);
+      const userId = userCredential.user.uid;
+
+      await db.collection('abrigos').doc(userId).set({
         nome,
         email,
         cnpj,
         telefone,
-        senha,
         criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
       });
 
       Alert.alert('Sucesso', 'Abrigo cadastrado com sucesso!');
       navigation.navigate('AbrigoDashboard');
     } catch (error) {
-      console.error('Erro ao cadastrar abrigo:', error);
-      Alert.alert('Erro', 'Não foi possível cadastrar o abrigo.');
+      console.error('Erro no cadastro de abrigo:', error);
+      Alert.alert('Erro', 'Não foi possível cadastrar. Verifique se o e-mail já foi usado.');
     }
   };
+
 
   return (
     <View style={styles.container}>

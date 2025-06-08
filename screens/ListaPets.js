@@ -1,78 +1,95 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  View, Text, StyleSheet, Image, FlatList,
+  TouchableOpacity, Alert
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { firebase } from '../firebase';
+import { useIsFocused } from '@react-navigation/native';
 import Cabecalho2 from '../components/Cabecalho2';
 
+const db = firebase.firestore();
 
 export default function ListaPets({ navigation }) {
-  const [pets, setPets] = useState([
-    { id: 1, nome: 'Fred', imagem: require('../images/fred.jpeg') },
-    { id: 2, nome: 'Lili', imagem: require('../images/lili.jpeg') }
-  ]);
+  const [animais, setAnimais] = useState([]);
+  const isFocused = useIsFocused();
 
-  const editar = (pet) => {
-    Alert.alert('Editar', `Você quer editar ${pet.nome}?`, [
-      {
-        text: 'Cancelar',
-        style: 'cancel'
-      },
-      {
-        text: 'OK',
-        onPress: () => {
-          navigation.navigate('CadastroAnimal', { pet });
-        }
-      }
-    ]);
-  };
+  useEffect(() => {
+    if (isFocused) {
+      const unsubscribe = db.collection('animais').onSnapshot(snapshot => {
+        const lista = [];
+        snapshot.forEach(doc => {
+          lista.push({ id: doc.id, ...doc.data() });
+        });
+        setAnimais(lista);
+      });
+      return () => unsubscribe();
+    }
+  }, [isFocused]);
 
-  const excluir = (pet) => {
+  const excluirAnimal = (id) => {
     Alert.alert(
-      'Excluir',
-      `Tem certeza que deseja excluir ${pet.nome}?`,
+      'Confirmar exclusão',
+      'Tem certeza que deseja excluir este animal?',
       [
         { text: 'Cancelar', style: 'cancel' },
         {
           text: 'Excluir',
+          onPress: async () => {
+            await db.collection('animais').doc(id).delete();
+          },
           style: 'destructive',
-          onPress: () => {
-            setPets((prevPets) => prevPets.filter((p) => p.id !== pet.id));
-          }
-        }
+        },
       ]
     );
   };
+
+  const renderItem = ({ item }) => (
+    <View style={styles.card}>
+      <Image
+        source={{ uri: item.imagem || 'https://via.placeholder.com/80' }}
+        style={styles.image}
+      />
+
+      <View style={styles.info}>
+        <Text style={styles.nome}>{item.nome}</Text>
+        <TouchableOpacity
+          style={styles.botaoEditar}
+          onPress={() => navigation.navigate('EditarAnimal', { animal: item })}
+        >
+          <Text style={styles.textoEditar}>Editar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoExcluir}
+          onPress={() => excluirAnimal(item.id)}
+        >
+          <Text style={styles.textoExcluir}>Excluir</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
       <Cabecalho2 navigation={navigation} />
 
-      <ScrollView contentContainerStyle={styles.listContainer}>
-        {pets.map((pet) => (
-          <View key={pet.id} style={styles.card}>
-            <Image source={pet.imagem} style={styles.image} />
-
-            <View style={styles.center}>
-              <Text style={styles.nome}>{pet.nome}</Text>
-            </View>
-
-            <View style={styles.botoes}>
-              <TouchableOpacity style={styles.botaoEditar} onPress={() => editar(pet)}>
-                <Text style={styles.textoEditar}>Editar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.botaoExcluir} onPress={() => excluir(pet)}>
-                <Text style={styles.textoExcluir}>Excluir</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        ))}
-
-        <TouchableOpacity
-          style={styles.cadastrar}
-          onPress={() => navigation.navigate('CadastroAnimal')}
-        >
-          <Text style={styles.cadastrarTexto}>Cadastrar novo animal</Text>
-        </TouchableOpacity>
-      </ScrollView>
+      <FlatList
+        data={animais}
+        keyExtractor={(item) => item.id}
+        renderItem={renderItem}
+        contentContainerStyle={styles.list}
+        ListFooterComponent={(
+          <>
+            <TouchableOpacity
+              style={styles.botaoCadastrar}
+              onPress={() => navigation.navigate('CadastroAnimal')}
+            >
+              <Text style={styles.botaoCadastrarTexto}>Cadastrar novo animal</Text>
+            </TouchableOpacity>
+            <View style={{ height: 100 }} />
+          </>
+        )}
+      />
 
       <View style={styles.footer}>
         <Ionicons
@@ -84,86 +101,100 @@ export default function ListaPets({ navigation }) {
       </View>
     </View>
   );
+
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+  },
+  logo: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    color: '#1a7f37',
+  },
   linhaInferior: {
     height: 4,
     backgroundColor: '#1a7f37',
-    width: '100%'
+    width: '100%',
+    marginBottom: 10,
   },
-  listContainer: {
-    padding: 30
+  list: {
+    paddingHorizontal: 20,
+    paddingBottom: 80,
   },
   card: {
-    flexDirection: 'row',
-    alignItems: 'center',
     borderWidth: 1.5,
     borderColor: '#1a7f37',
     borderRadius: 12,
-    padding: 10,
-    marginBottom: 20,
-    backgroundColor: '#fff'
+    padding: 8,
+    marginBottom: 16,
+    backgroundColor: '#fff',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10
   },
   image: {
-    width: 100,
-    height: 100,
-    borderRadius: 8
+    width: 80,
+    height: 80,
+    borderRadius: 10,
   },
-  center: {
+  info: {
     flex: 1,
-    alignItems: 'center'
+    justifyContent: 'center',
   },
   nome: {
+    fontWeight: 'bold',
     fontSize: 16,
-    fontWeight: 'bold'
-  },
-  botoes: {
-    justifyContent: 'center',
-    alignItems: 'flex-end',
-    gap: 8
+    marginBottom: 10
   },
   botaoEditar: {
-    backgroundColor: '#e6f4ea',
-    paddingVertical: 6,
-    paddingHorizontal: 17,
+    backgroundColor: '#d4f5dd',
+    paddingVertical: 4,
+    paddingHorizontal: 14,
     borderRadius: 6,
-    borderColor: '#1a7f37',
-    borderWidth: 1
+    marginBottom: 6,
+    alignSelf: 'flex-start',
+  },
+  botaoExcluir: {
+    backgroundColor: '#ffd9d9',
+    paddingVertical: 4,
+    paddingHorizontal: 14,
+    borderRadius: 6,
+    alignSelf: 'flex-start',
   },
   textoEditar: {
     color: '#1a7f37',
-    fontWeight: 'bold'
-  },
-  botaoExcluir: {
-    backgroundColor: '#fde8e8',
-    paddingVertical: 6,
-    paddingHorizontal: 14,
-    borderRadius: 6,
-    borderColor: '#e53935',
-    borderWidth: 1,
-    marginTop: 8
+    fontWeight: 'bold',
   },
   textoExcluir: {
-    color: '#e53935',
-    fontWeight: 'bold'
+    color: '#d11a2a',
+    fontWeight: 'bold',
   },
-  cadastrar: {
+  botaoCadastrar: {
     backgroundColor: '#1a7f37',
-    padding: 14,
-    borderRadius: 6,
+    marginHorizontal: 40,
+    paddingVertical: 14,
+    borderRadius: 8,
     alignItems: 'center',
-    marginTop: 200
+    marginBottom: 15,
   },
-  cadastrarTexto: {
+  botaoCadastrarTexto: {
     color: '#fff',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    fontSize: 15,
   },
   footer: {
     backgroundColor: '#1a7f37',
     alignItems: 'center',
     padding: 20,
-    marginBottom: 10
-  }
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+  },
 });
