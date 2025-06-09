@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, ImageBackground, KeyboardAvoidingView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import Cabecalho2 from '../../components/Cabecalho2';
 import { firebase } from '../../firebase';
 
-export default function Chat({ route, navigation }) {
-  const { nomeContato = 'Abrigo', userId = firebase.auth().currentUser.uid } = route.params || {};
+export default function ChatAbrigo({ route, navigation }) {
+  const { userId, nome } = route.params;
   const [mensagem, setMensagem] = useState('');
   const [mensagens, setMensagens] = useState([]);
 
@@ -27,9 +26,9 @@ export default function Chat({ route, navigation }) {
 
     await firebase.firestore().collection('mensagens').add({
       texto: mensagem,
-      tipo: 'enviada',
+      tipo: 'recebida',
       userId,
-      nome: firebase.auth().currentUser.email,
+      nome: nome || 'Abrigo',
       criadoEm: firebase.firestore.FieldValue.serverTimestamp()
     });
 
@@ -38,11 +37,9 @@ export default function Chat({ route, navigation }) {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={90}>
-      <Cabecalho2 navigation={navigation} />
-
       <View style={styles.topInfo}>
         <ImageBackground source={require('../../images/abrigo-logo.png')} style={styles.abrigoFoto} imageStyle={{ borderRadius: 50 }} />
-        <Text style={styles.abrigoNome}>{nomeContato}</Text>
+        <Text style={styles.abrigoNome}>{nome}</Text>
       </View>
 
       <ImageBackground source={require('../../images/bg-patinhas.png')} style={styles.chatBackground}>
@@ -51,7 +48,7 @@ export default function Chat({ route, navigation }) {
           keyExtractor={(item, index) => index.toString()}
           contentContainerStyle={{ padding: 15 }}
           renderItem={({ item }) => (
-            <View style={[styles.mensagem, item.tipo === 'enviada' ? styles.enviada : styles.recebida]}>
+            <View style={[styles.mensagem, item.tipo === 'enviada' ? styles.recebida : styles.enviada]}>
               <Text style={styles.textoMensagem}>{item.texto}</Text>
             </View>
           )}
@@ -59,21 +56,18 @@ export default function Chat({ route, navigation }) {
       </ImageBackground>
 
       <View style={styles.areaInput}>
-        <TextInput style={styles.input} placeholder="Escreva..." value={mensagem} onChangeText={setMensagem} />
+        <TextInput style={styles.input} placeholder="Responder..." value={mensagem} onChangeText={setMensagem} />
         <TouchableOpacity onPress={enviarMensagem} style={styles.botaoEnviar}>
           <Ionicons name="send" size={20} color="#fff" />
         </TouchableOpacity>
-      </View>
-
-      <View style={styles.footer}>
-        <Ionicons name="home-outline" size={24} color="#fff" onPress={() => navigation.navigate('Opcoes')} />
       </View>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  container: {
+  flex: 1, backgroundColor: '#fff' },
   topInfo: { flexDirection: 'row', alignItems: 'center', padding: 12 },
   abrigoFoto: { width: 45, height: 45, marginRight: 10 },
   abrigoNome: { fontWeight: 'bold', fontSize: 12, flexShrink: 1 },
@@ -84,6 +78,8 @@ const styles = StyleSheet.create({
   textoMensagem: { color: '#fff' },
   areaInput: { flexDirection: 'row', alignItems: 'center', padding: 10, backgroundColor: '#fff' },
   input: { flex: 1, backgroundColor: '#f2f2f2', borderRadius: 25, paddingHorizontal: 15, marginRight: 10 },
-  botaoEnviar: { backgroundColor: '#1a7f37', borderRadius: 25, padding: 10 },
-  footer: { backgroundColor: '#1a7f37', alignItems: 'center', padding: 15 },
+  botaoEnviar: {
+  backgroundColor: '#1a7f37',
+  borderRadius: 25,
+  padding: 10 },
 });
