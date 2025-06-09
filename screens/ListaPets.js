@@ -58,7 +58,7 @@ export default function ListaPets({ navigation }) {
             <View style={{ flex: 1 }}>
               <Text style={styles.nome}>{item.nome}</Text>
               <Text style={styles.info}>{item.raca}</Text>
-              <Text style={styles.info}>{item.idade} anos</Text>
+              <Text style={styles.info}>{item.idade}</Text>
             </View>
             <View style={styles.botoes}>
               <TouchableOpacity style={styles.botaoEditar} onPress={() => navigation.navigate('EditarAnimal', { animal: item })}>

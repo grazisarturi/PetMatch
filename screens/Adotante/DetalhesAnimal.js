@@ -1,63 +1,81 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { firebase } from '../../firebase';
 import Cabecalho2 from '../../components/Cabecalho2';
 
-export default function DetalhesAnimal({ route, navigation }) {
-  const { petId } = route.params;
+const db = firebase.firestore();
 
-  const petData = {
-    id: petId,
-    nome: 'Lili',
-    idade: '12 meses',
-    imagem: require('../../images/lili.jpeg'),
-    localizacao: 'R. Paranaguá, 1149 - Bairro São Cristóvão, Cascavel - PR',
-    porte: 'médio',
-    especie: 'felis catus (felino)',
-    sexo: 'fêmea',
-    raca: 'SDR (sem raça definida)',
-    castrado: 'Não',
-    descricao:
-      'Gatinha de olhos verdes, com pelagem rajada em tons de marrom e cinza. Ela tem um temperamento tranquilo e curioso. É um animal dócil e se dá bem com outros pets.',
-  };
+export default function DetalhesAnimal() {
+  const route = useRoute();
+  const navigation = useNavigation();
+  const { id } = route.params;
+
+  const [animal, setAnimal] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const buscarAnimal = async () => {
+      try {
+        const docRef = await db.collection('animais').doc(id).get();
+        if (docRef.exists) {
+          setAnimal({ id: docRef.id, ...docRef.data() });
+        }
+      } catch (error) {
+        console.error('Erro ao buscar animal:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    buscarAnimal();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" color="#1a7f37" />
+      </View>
+    );
+  }
+
+  if (!animal) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.errorText}>Animal não encontrado.</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <Cabecalho2 navigation={navigation} />
+      <View style={styles.divisor} />
 
       <ScrollView contentContainerStyle={styles.content}>
-        <Image source={petData.imagem} style={styles.image} />
-        
+        <Image source={{ uri: animal.foto }} style={styles.image} />
 
-        <Text style={styles.name}>{petData.nome}, {petData.idade}</Text>
-        <View style={styles.row}>
-          <Ionicons name="location-outline" size={16} />
-          <Text style={styles.location}>{petData.localizacao}</Text>
+        <Text style={styles.nome}>
+          {animal.nome}, {animal.idade} {animal.idade == 1 ? 'mês' : 'meses'}
+        </Text>
+
+        <View style={styles.localBox}>
+          <Ionicons name="location-outline" size={16} color="#666" />
+          <Text style={styles.localText}>{animal.localizacao}</Text>
         </View>
 
-        <Text style={styles.detail}><Text style={styles.bold}>Porte físico:</Text> {petData.porte}</Text>
-        <Text style={styles.detail}><Text style={styles.bold}>Espécie:</Text> {petData.especie}</Text>
-        <Text style={styles.detail}><Text style={styles.bold}>Sexo:</Text> {petData.sexo}</Text>
-        <Text style={styles.detail}><Text style={styles.bold}>Raça:</Text> {petData.raca}</Text>
-        <Text style={styles.detail}><Text style={styles.bold}>Castrado:</Text> {petData.castrado}</Text>
-
-        <Text style={styles.detail}><Text style={styles.bold}>Descrição:</Text> {petData.descricao}</Text>
+        <Text style={styles.info}><Text style={styles.bold}>Porte físico:</Text> {animal.porte}</Text>
+        <Text style={styles.info}><Text style={styles.bold}>Espécie:</Text> {animal.especie}</Text>
+        <Text style={styles.info}><Text style={styles.bold}>Sexo:</Text> {animal.sexo}</Text>
+        <Text style={styles.info}><Text style={styles.bold}>Raça:</Text> {animal.raca}</Text>
+        <Text style={styles.info}><Text style={styles.bold}>Castrado:</Text> {animal.castrado ? 'Sim' : 'Não'}</Text>
+        <Text style={styles.info}><Text style={styles.bold}>Descrição:</Text> {animal.descricao}</Text>
       </ScrollView>
 
-        <View style={styles.footer}>
-          <TouchableOpacity onPress={() => navigation.navigate('Opcoes')}>
-            <Ionicons name="home-outline" size={26} color="#fff" />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => navigation.navigate('Chat')}
-            style={styles.adotarBtn}
-          >
-            <Ionicons name="heart-outline" size={20} color="#fff" style={{ marginRight: 5}} />
-            <Text style={styles.adotar}>Adotar</Text>
-          </TouchableOpacity>
+      <View style={styles.footer}>
+        <Ionicons name="home-outline" size={25} color="#fff" onPress={() => navigation.navigate('Opcoes')} />
+        <Ionicons name="paw-outline" size={25} color="#fff" onPress={() => navigation.navigate('Chat')}/>
       </View>
-
     </View>
   );
 }
@@ -65,58 +83,63 @@ export default function DetalhesAnimal({ route, navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
   content: {
-    padding: 20
+    padding: 20,
+    paddingBottom: 100,
+    alignItems: 'center',
+  },
+  loader: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorText: {
+    fontSize: 18,
+    color: 'red',
+    textAlign: 'center',
+    marginTop: 20,
+  },
+  divisor: {
+    height: 4,
+    backgroundColor: '#1a7f37',
   },
   image: {
     width: '100%',
-    height: 240,
-    borderRadius: 6,
-    marginBottom: 20
+    height: 260,
+    resizeMode: 'cover',
+    marginBottom: 20,
+    borderRadius: 10,
   },
-  name: {
+  nome: {
     fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 8
+    textAlign: 'center',
+    marginBottom: 6,
   },
-  row: {
+  localBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12
+    marginBottom: 12,
   },
-  location: {
-    marginLeft: 6,
-    fontSize: 14,
-    color: '#555'
+  localText: {
+    color: '#666',
+    marginLeft: 5,
   },
-  detail: {
+  info: {
     fontSize: 16,
-    marginBottom: 6
+    marginBottom: 6,
+    color: '#333',
+    alignSelf: 'flex-start',
   },
   bold: {
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   footer: {
     backgroundColor: '#1a7f37',
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 30,
+    justifyContent: 'space-around',
     paddingVertical: 16,
-    alignItems: 'center'
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
   },
-  adotar: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold'
-  },
-
-    adotarBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  adotar: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold'
-  }
-
 });

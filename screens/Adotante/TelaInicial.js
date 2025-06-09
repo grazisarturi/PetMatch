@@ -45,12 +45,12 @@ export default function Home({ navigation }) {
   const renderItem = ({ item }) => (
     <View style={styles.card}>
       <Image
-        source={{ uri: 'https://cdn-icons-png.flaticon.com/512/616/616408.png' }}
-        style={styles.image}
-      />
+      source={{ uri: 'https://cdn-icons-png.flaticon.com/512/616/616408.png' }}
+      style={styles.image}
+    />
 
       <Text style={styles.name}>{item.nome}</Text>
-      <TouchableOpacity onPress={() => navigation.navigate('DetalhesAnimal', { petId: item.id })}>
+      <TouchableOpacity onPress={() => navigation.navigate('DetalhesAnimal', { id: item.id })}>
         <Text style={styles.link}>Conhecer</Text>
       </TouchableOpacity>
     </View>

@@ -21,7 +21,7 @@ export default function PedidoDoacao({ navigation }) {
 
         <View style={styles.inputGroup}>
             <Text style={styles.label}>Quantidade</Text>
-            <TextInput style={styles.input} keyboardType="numeric" />
+            <TextInput style={styles.input}/>
         </View>
 
         <View style={styles.inputGroup}>

@@ -1,73 +1,49 @@
-import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  Image,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
+// screens/Adotante/Doacoes.js
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Cabecalho2 from '../../components/Cabecalho2';
+import { firebase } from '../../firebase';
 
-const doacoes = [
-  {
-    id: '1',
-    nome: 'Ração para cães',
-    observacao: 'Marca é opcional, apenas optamos por rações que não sejam coloridas.',
-    imagem: require('../../images/racao-caes.jpg'),
-  },
-  {
-    id: '2',
-    nome: 'Ração para gatos',
-    observacao: 'Marca é opcional, apenas optamos por rações que não sejam coloridas.',
-    imagem: require('../../images/racao-gatos.jpg'),
-  },
-  {
-    id: '3',
-    nome: 'Mantinhas',
-    observacao: '',
-    imagem: require('../../images/mantas.jpg'),
-  },
-  {
-    id: '4',
-    nome: 'Vermífugo para cães',
-    observacao: '',
-    imagem: require('../../images/vermifugo.jpg'),
-  },
-];
+const db = firebase.firestore();
 
-export default function Doacoes({ navigation }) {
+export default function Doacoes({ route, navigation }) {
+  const { abrigo } = route.params;
+  const [doacoes, setDoacoes] = useState([]);
+
+  useEffect(() => {
+    const unsubscribe = db.collection('doacoes')
+      .where('abrigo', '==', abrigo.abrigo || abrigo.nome)
+      .onSnapshot(snapshot => {
+        const lista = [];
+        snapshot.forEach(doc => {
+          lista.push({ id: doc.id, ...doc.data() });
+        });
+        setDoacoes(lista);
+      });
+
+    return () => unsubscribe();
+  }, []);
+
   return (
     <View style={styles.container}>
       <Cabecalho2 navigation={navigation} />
 
-      <Image
-        source={require('../../images/abrigo-capa.jpg')}
-        style={styles.imagemCapa}
-      />
-      <Image
-        source={require('../../images/abrigo-logo.png')}
-        style={styles.logoAbrigo}
-      />
-      <Text style={styles.nomeAbrigo}>
-        ABRIGO DE ANIMAIS SÃO FRANCISCO DE ASSIS DE CASCAVEL-PR
-      </Text>
-      <Text style={styles.local}>
-        📍 R. Paranaguá, 1149 - Bairro São Cristóvão, Cascavel - PR
-      </Text>
+      <Image source={require('../../images/capa.jpg')} style={styles.imagemCapa} />
+      <Image source={require('../../images/logo.png')} style={styles.logoAbrigo} />
+      <Text style={styles.nomeAbrigo}>{abrigo.abrigo || abrigo.nome}</Text>
+      <Text style={styles.local}>📍 {abrigo.localizacao}</Text>
 
       <FlatList
         data={doacoes}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.card}>
-            <Image source={item.imagem} style={styles.image} />
-            <Text style={styles.name}>{item.nome}</Text>
-            {item.observacao ? (
+            <Image source={require('../../images/racao-caes.jpg')} style={styles.image} />
+            <Text style={styles.name}>{item.item}</Text>
+            {item.descricao ? (
               <Text style={styles.observacao}>
-                <Text style={{ fontWeight: 'bold' }}>Observação:</Text> {item.observacao}
+                <Text style={{ fontWeight: 'bold' }}>Observação:</Text> {item.descricao}
               </Text>
             ) : null}
           </View>
@@ -78,12 +54,7 @@ export default function Doacoes({ navigation }) {
       />
 
       <View style={styles.footer}>
-        <Ionicons
-          name="home-outline"
-          size={25}
-          color="#fff"
-          onPress={() => navigation.navigate('Opcoes')}
-        />
+        <Ionicons name="home-outline" size={25} color="#fff" onPress={() => navigation.navigate('Opcoes')} />
       </View>
     </View>
   );
@@ -125,7 +96,7 @@ const styles = StyleSheet.create({
   },
   nomeAbrigo: {
     textAlign: 'center',
-    marginTop: 40,
+    marginTop: 70,
     fontWeight: 'bold',
   },
   local: {
