@@ -1,45 +1,32 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  FlatList,
-  TouchableOpacity,
-  Image,
-} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TextInput, FlatList, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Cabecalho2 from '../../components/Cabecalho2';
+import { firebase } from '../../firebase';
 
-const clinicas = [
-  {
-    id: '1',
-    nome: 'CLÍNICA VETERINÁRIA AMOR DE ALGUÉM',
-    localizacao: 'R. Castro Alves, 362 - Centro, Dois Vizinhos - PR',
-    imagem: require('../../images/clinica1.png'),
-  },
-  {
-    id: '2',
-    nome: 'CLÍNICA VETERINÁRIA AMOR DE ALGUÉM',
-    localizacao: 'R. Castro Alves, 362 - Centro, Dois Vizinhos - PR',
-    imagem: require('../../images/clinica1.png'),
-  },
-  {
-    id: '3',
-    nome: 'CLÍNICA VETERINÁRIA AMOR DE ALGUÉM',
-    localizacao: 'R. Castro Alves, 362 - Centro, Dois Vizinhos - PR',
-    imagem: require('../../images/clinica1.png'),
-  },
-];
+const db = firebase.firestore();
 
 export default function Clinicas({ navigation }) {
+  const [clinicas, setClinicas] = useState([]);
   const [nomeFiltro, setNomeFiltro] = useState('');
   const [localizacaoFiltro, setLocalizacaoFiltro] = useState('');
 
+  useEffect(() => {
+    const unsubscribe = db.collection('clinicas').onSnapshot(snapshot => {
+      const lista = [];
+      snapshot.forEach(doc => {
+        lista.push({ id: doc.id, ...doc.data() });
+      });
+      setClinicas(lista);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   const aplicarFiltros = () => {
     return clinicas.filter((clinica) => {
-      const nomeMatch = clinica.nome.toLowerCase().includes(nomeFiltro.toLowerCase());
-      const localMatch = clinica.localizacao.toLowerCase().includes(localizacaoFiltro.toLowerCase());
+      const nomeMatch = clinica.nome?.toLowerCase().includes(nomeFiltro.toLowerCase());
+      const localMatch = clinica.localizacao?.toLowerCase().includes(localizacaoFiltro.toLowerCase());
       return nomeMatch && localMatch;
     });
   };
@@ -48,7 +35,7 @@ export default function Clinicas({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Cabecalho2 navigation={navigation} />      
+      <Cabecalho2 navigation={navigation} />
 
       <Text style={styles.subtitulo}>Carinho em forma de cuidado 🐾</Text>
 
@@ -86,7 +73,7 @@ export default function Clinicas({ navigation }) {
             style={styles.card}
             onPress={() => navigation.navigate('DetalhesClinica', { clinica: item })}
           >
-            <Image source={item.imagem} style={styles.logoClinica} />
+            <Image source={{ uri: item.logoUrl }} style={styles.logoClinica} />
             <View style={{ flex: 1 }}>
               <Text style={styles.nome} numberOfLines={1}>{item.nome}</Text>
               <Text style={styles.local}>📍 {item.localizacao}</Text>
@@ -96,14 +83,8 @@ export default function Clinicas({ navigation }) {
         contentContainerStyle={styles.list}
       />
 
-      {/* Rodapé */}
       <View style={styles.footer}>
-        <Ionicons
-          name="home-outline"
-          size={25}
-          color="#fff"
-          onPress={() => navigation.navigate('Opcoes')}
-        />
+        <Ionicons name="home-outline" size={25} color="#fff" onPress={() => navigation.navigate('Opcoes')} />
       </View>
     </View>
   );

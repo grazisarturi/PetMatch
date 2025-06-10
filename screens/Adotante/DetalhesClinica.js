@@ -10,43 +10,27 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import Cabecalho2 from '../../components/Cabecalho2';
 
-const itensNecessarios = [
-  {
-    id: '1',
-    nome: 'Ração para gatos',
-    descricao: '10% de desconto',
-    imagem: require('../../images/racao-gatos.jpg'),
-  },
-  {
-    id: '2',
-    nome: 'Ração para cães',
-    imagem: require('../../images/racao-caes.jpg'),
-  },
-];
-
 export default function DetalhesClinica({ route, navigation }) {
   const { clinica } = route.params;
 
   return (
     <View style={styles.container}>
       <Cabecalho2 navigation={navigation} />
-      
+
       <View style={styles.clinicaImagemContainer}>
         <Image
-          source={require('../../images/capa-clinica.jpg')}
+          source={{ uri: clinica.capaUrl || 'https://via.placeholder.com/400x200.png?text=Capa+da+Clínica' }}
           style={styles.imagemClinica}
         />
         <Image
-          source={require('../../images/clinica1.png')}
+          source={{ uri: clinica.logoUrl || 'https://via.placeholder.com/100x100.png?text=Logo' }}
           style={styles.logoSobreImagem}
         />
       </View>
 
-      {/* Nome e local */}
       <Text style={styles.nome}>{clinica.nome}</Text>
       <Text style={styles.localizacao}>📍 {clinica.localizacao}</Text>
 
-      {/* Categorias (barra icônica) */}
       <View style={styles.categorias}>
         <Ionicons name="paw-outline" size={22} color="#fff" />
         <Ionicons name="medkit-outline" size={22} color="#fff" />
@@ -54,21 +38,22 @@ export default function DetalhesClinica({ route, navigation }) {
         <Ionicons name="fitness-outline" size={22} color="#fff" />
       </View>
 
-      {/* Lista de itens */}
       <FlatList
-        data={itensNecessarios}
-        keyExtractor={(item) => item.id}
+        data={clinica.itens || []}
+        keyExtractor={(_, index) => index.toString()}
         numColumns={2}
         contentContainerStyle={styles.lista}
         renderItem={({ item }) => (
           <View style={styles.item}>
-            <Image source={item.imagem} style={styles.itemImagem} />
+            <Image
+              source={{ uri: item.imagemUrl || 'https://via.placeholder.com/80x80.png?text=Item' }}
+              style={styles.itemImagem}
+            />
             <Text style={styles.itemNome}>{item.nome}</Text>
           </View>
         )}
       />
 
-      {/* Rodapé */}
       <View style={styles.footer}>
         <Ionicons
           name="home-outline"
@@ -99,17 +84,13 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     position: 'absolute',
     bottom: -30,
+    backgroundColor: '#fff'
   },
   nome: {
     fontSize: 16,
     fontWeight: 'bold',
     marginTop: 40,
     textAlign: 'center',
-  },
-  descricao: {
-    fontSize: 12,
-    textAlign: 'center',
-    color: '#333',
   },
   localizacao: {
     fontSize: 12,
