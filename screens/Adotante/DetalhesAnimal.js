@@ -72,9 +72,15 @@ export default function DetalhesAnimal() {
         <Text style={styles.info}><Text style={styles.bold}>Descrição:</Text> {animal.descricao}</Text>
       </ScrollView>
 
+{  console.log(animal)}
+
+
       <View style={styles.footer}>
         <Ionicons name="home-outline" size={25} color="#fff" onPress={() => navigation.navigate('Opcoes')} />
-        <Ionicons name="paw-outline" size={25} color="#fff" onPress={() => navigation.navigate('Chat')}/>
+        <Ionicons name="paw-outline" size={25} color="#fff" onPress={() => navigation.navigate('Chat', {
+          abrigoId: animal.abrigoId,
+          nomeContato: animal.nome,
+        })}/>
       </View>
     </View>
   );

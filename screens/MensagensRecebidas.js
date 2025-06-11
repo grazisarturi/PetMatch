@@ -1,26 +1,38 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Image,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { firebase } from '../firebase';
 
 export default function MensagensRecebidas({ navigation }) {
   const [mensagens, setMensagens] = useState([]);
+  const abrigoId = firebase.auth().currentUser.uid;
 
   useEffect(() => {
-    const unsubscribe = firebase.firestore()
+    const unsubscribe = firebase
+      .firestore()
       .collection('mensagens')
-      .orderBy('criadoEm', 'desc')
-      .onSnapshot(snapshot => {
-        const mensagensAgrupadas = {};
+      .where('para', '==', abrigoId)
+      .onSnapshot((snapshot) => {
+        const agrupadas = {};
 
-        snapshot.forEach(doc => {
+        snapshot.forEach((doc) => {
           const data = doc.data();
-          if (!mensagensAgrupadas[data.userId]) {
-            mensagensAgrupadas[data.userId] = { ...data, id: doc.id };
+          if (!agrupadas[data.de]) {
+            agrupadas[data.de] = {
+              ...data,
+              id: doc.id,
+            };
           }
         });
 
-        setMensagens(Object.values(mensagensAgrupadas));
+        setMensagens(Object.values(agrupadas));
       });
 
     return () => unsubscribe();
@@ -42,23 +54,38 @@ export default function MensagensRecebidas({ navigation }) {
           <TouchableOpacity
             key={msg.id}
             style={styles.card}
-            onPress={() => navigation.navigate('ChatAbrigo', { userId: msg.userId, nome: msg.nome })}
+            onPress={() =>
+              navigation.navigate('ChatAbrigo', {
+                userId: msg.de,
+                nome: msg.nome,
+              })
+            }
           >
             <View style={styles.infoContainer}>
-              <Image source={require('../images/fred.jpeg')} style={styles.imagem} />
+              <Image
+                source={require('../images/fred.jpeg')}
+                style={styles.imagem}
+              />
               <View>
-                <Text style={styles.pet}>{msg.pet || 'Pet'}</Text>
+                <Text style={styles.pet}>Pet</Text>
                 <Text style={styles.nome}>{msg.nome}</Text>
                 <Text>{msg.texto}</Text>
               </View>
             </View>
-            <Text style={styles.hora}>-</Text>
+            <Text style={styles.hora}>
+              {msg.criadoEm?.toDate().toLocaleTimeString() || '-'}
+            </Text>
           </TouchableOpacity>
         ))}
       </ScrollView>
 
       <View style={styles.footer}>
-        <Ionicons name="home-outline" size={24} color="#fff" onPress={() => navigation.navigate('AbrigoDashboard')} />
+        <Ionicons
+          name="home-outline"
+          size={24}
+          color="#fff"
+          onPress={() => navigation.navigate('AbrigoDashboard')}
+        />
       </View>
     </View>
   );

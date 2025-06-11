@@ -29,7 +29,9 @@ export default function LoginScreen({ navigation }) {
       // Tentar achar o usuário como abrigo
       const abrigoDoc = await db.collection('abrigos').doc(userId).get();
       if (abrigoDoc.exists) {
-        navigation.navigate('AbrigoDashboard');
+        navigation.navigate('AbrigoDashboard',{
+          cnpj: abrigoDoc.data().cnpj,
+        });
         return;
       }
 

@@ -1,17 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, ImageBackground, KeyboardAvoidingView, Platform } from 'react-native';
+import {
+  View, Text, TextInput, TouchableOpacity, StyleSheet,
+  FlatList, ImageBackground, KeyboardAvoidingView, Platform
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { firebase } from '../../firebase';
+import { firebase } from '../firebase';
 
-export default function ChatAbrigo({ route, navigation }) {
+export default function ChatAbrigo({ route }) {
   const { userId, nome } = route.params;
+  const abrigoId = firebase.auth().currentUser.uid;
+
   const [mensagem, setMensagem] = useState('');
   const [mensagens, setMensagens] = useState([]);
 
   useEffect(() => {
     const unsubscribe = firebase.firestore()
       .collection('mensagens')
-      .where('userId', '==', userId)
+      .where('de', 'in', [userId, abrigoId])
+      .where('para', 'in', [userId, abrigoId])
       .orderBy('criadoEm')
       .onSnapshot(snapshot => {
         const msgs = snapshot.docs.map(doc => doc.data());
@@ -27,7 +33,8 @@ export default function ChatAbrigo({ route, navigation }) {
     await firebase.firestore().collection('mensagens').add({
       texto: mensagem,
       tipo: 'recebida',
-      userId,
+      de: abrigoId,
+      para: userId,
       nome: nome || 'Abrigo',
       criadoEm: firebase.firestore.FieldValue.serverTimestamp()
     });
@@ -36,19 +43,35 @@ export default function ChatAbrigo({ route, navigation }) {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={90}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={90}
+    >
       <View style={styles.topInfo}>
-        <ImageBackground source={require('../../images/abrigo-logo.png')} style={styles.abrigoFoto} imageStyle={{ borderRadius: 50 }} />
+        <ImageBackground
+          source={require('../images/abrigo-logo.png')}
+          style={styles.abrigoFoto}
+          imageStyle={{ borderRadius: 50 }}
+        />
         <Text style={styles.abrigoNome}>{nome}</Text>
       </View>
 
-      <ImageBackground source={require('../../images/bg-patinhas.png')} style={styles.chatBackground}>
+      <ImageBackground
+        source={require('../images/bg-patinhas.png')}
+        style={styles.chatBackground}
+      >
         <FlatList
           data={mensagens}
-          keyExtractor={(item, index) => index.toString()}
+          keyExtractor={(_, index) => index.toString()}
           contentContainerStyle={{ padding: 15 }}
           renderItem={({ item }) => (
-            <View style={[styles.mensagem, item.tipo === 'enviada' ? styles.recebida : styles.enviada]}>
+            <View
+              style={[
+                styles.mensagem,
+                item.de === abrigoId ? styles.enviada : styles.recebida
+              ]}
+            >
               <Text style={styles.textoMensagem}>{item.texto}</Text>
             </View>
           )}
@@ -56,7 +79,12 @@ export default function ChatAbrigo({ route, navigation }) {
       </ImageBackground>
 
       <View style={styles.areaInput}>
-        <TextInput style={styles.input} placeholder="Responder..." value={mensagem} onChangeText={setMensagem} />
+        <TextInput
+          style={styles.input}
+          placeholder="Responder..."
+          value={mensagem}
+          onChangeText={setMensagem}
+        />
         <TouchableOpacity onPress={enviarMensagem} style={styles.botaoEnviar}>
           <Ionicons name="send" size={20} color="#fff" />
         </TouchableOpacity>
@@ -66,8 +94,7 @@ export default function ChatAbrigo({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-  flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: '#fff' },
   topInfo: { flexDirection: 'row', alignItems: 'center', padding: 12 },
   abrigoFoto: { width: 45, height: 45, marginRight: 10 },
   abrigoNome: { fontWeight: 'bold', fontSize: 12, flexShrink: 1 },
@@ -77,9 +104,16 @@ const styles = StyleSheet.create({
   recebida: { alignSelf: 'flex-start', backgroundColor: '#a8e6a1', marginLeft: 10 },
   textoMensagem: { color: '#fff' },
   areaInput: { flexDirection: 'row', alignItems: 'center', padding: 10, backgroundColor: '#fff' },
-  input: { flex: 1, backgroundColor: '#f2f2f2', borderRadius: 25, paddingHorizontal: 15, marginRight: 10 },
+  input: {
+    flex: 1,
+    backgroundColor: '#f2f2f2',
+    borderRadius: 25,
+    paddingHorizontal: 15,
+    marginRight: 10,
+  },
   botaoEnviar: {
-  backgroundColor: '#1a7f37',
-  borderRadius: 25,
-  padding: 10 },
+    backgroundColor: '#1a7f37',
+    borderRadius: 25,
+    padding: 10,
+  },
 });
