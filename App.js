@@ -13,7 +13,6 @@ import PedidoDoacao from './screens/PedidoDoacao';
 import MensagensRecebidas from './screens/MensagensRecebidas';
 import EditarDoacao from './screens/EditarDoacao';
 import EditarAnimal from './screens/EditarAnimal';
-import ChatAbrigo from './screens/ChatAbrigo'
 
 //adotante
 import CadastroAdotante from './screens/Adotante/CadastroAdotante';
@@ -45,8 +44,7 @@ export default function App() {
         <Stack.Screen name="Mensagens" component={MensagensRecebidas} options={{headerShown: false}} />
         <Stack.Screen name="EditarDoacao" component={EditarDoacao} options={{ headerShown: false }} />
         <Stack.Screen name="EditarAnimal" component={EditarAnimal} options={{ headerShown: false }} />
-        <Stack.Screen name="ChatAbrigo" component={ChatAbrigo} options={{ headerShown: false }} />
-
+        
 
         {/* Telas Adotante */}
         <Stack.Screen name="CadastroAdotante" component={CadastroAdotante}options={{headerShown: false}} />

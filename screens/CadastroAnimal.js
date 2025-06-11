@@ -21,7 +21,16 @@ export default function CadastroAnimal({ navigation }) {
   const [castrado, setCastrado] = useState(false);
 
   const cadastrarAnimal = async () => {
+   
+    if (!nome || !especie || !raca || !idade || !sexo || !porte || !localizacao) {
+      Alert.alert('Erro', 'Por favor, preencha todos os campos.');
+      return;
+    }
+
     try {
+
+      const abrigoId = firebase.auth().currentUser.uid;
+      
       await db.collection('animais').add({
         nome,
         especie,
@@ -32,11 +41,13 @@ export default function CadastroAnimal({ navigation }) {
         descricao,
         localizacao,
         castrado,
-        imagem: 'https://via.placeholder.com/100'
+        abrigoId, 
+        imagem: 'https://via.placeholder.com/100', 
+        criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
       });
 
       Alert.alert('Sucesso', 'Animal cadastrado com sucesso!');
-      navigation.navigate('AbrigoDashboard');
+      navigation.navigate('ListaPets'); 
     } catch (error) {
       console.error('Erro ao cadastrar animal:', error);
       Alert.alert('Erro', 'Não foi possível cadastrar o animal.');
@@ -66,7 +77,6 @@ export default function CadastroAnimal({ navigation }) {
           <Switch value={castrado} onValueChange={setCastrado} />
         </View>
 
-        {/* Botão Cadastrar dentro do ScrollView */}
         <TouchableOpacity style={styles.button} onPress={cadastrarAnimal}>
           <Text style={styles.buttonText}>Cadastrar animal</Text>
         </TouchableOpacity>
@@ -120,7 +130,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20
   },
-
   buttonText: { 
     color: '#fff', 
     fontWeight: 'bold', 

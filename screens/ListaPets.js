@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   View, Text, StyleSheet, Image,
-  TouchableOpacity, ScrollView, Alert
+  TouchableOpacity, ScrollView, Alert, ActivityIndicator
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { firebase } from '../firebase';
@@ -12,20 +12,30 @@ const db = firebase.firestore();
 
 export default function ListaPets({ navigation }) {
   const [animais, setAnimais] = useState([]);
+  const [loading, setLoading] = useState(true); 
   const isFocused = useIsFocused();
+  
+  
+  const userId = firebase.auth().currentUser?.uid;
 
   useEffect(() => {
-    if (isFocused) {
-      const unsubscribe = db.collection('animais').onSnapshot(snapshot => {
-        const lista = [];
-        snapshot.forEach(doc => {
-          lista.push({ id: doc.id, ...doc.data() });
+    if (isFocused && userId) { 
+      const unsubscribe = db.collection('animais')
+        
+        .where('abrigoId', '==', userId)
+        .onSnapshot(snapshot => {
+          const lista = [];
+          snapshot.forEach(doc => {
+            lista.push({ id: doc.id, ...doc.data() });
+          });
+          setAnimais(lista);
+          setLoading(false); 
         });
-        setAnimais(lista);
-      });
       return () => unsubscribe();
+    } else {
+      setLoading(false);
     }
-  }, [isFocused]);
+  }, [isFocused, userId]);
 
   const excluirAnimal = (id) => {
     Alert.alert(
@@ -36,7 +46,12 @@ export default function ListaPets({ navigation }) {
         {
           text: 'Excluir',
           onPress: async () => {
-            await db.collection('animais').doc(id).delete();
+            try {
+              await db.collection('animais').doc(id).delete();
+              Alert.alert('Sucesso', 'Animal excluído.');
+            } catch (error) {
+              Alert.alert('Erro', 'Não foi possível excluir o animal.');
+            }
           },
           style: 'destructive',
         },
@@ -44,33 +59,42 @@ export default function ListaPets({ navigation }) {
     );
   };
 
+  if (loading) {
+    return <ActivityIndicator size="large" color="#1a7f37" style={{flex: 1}}/>
+  }
+
   return (
     <View style={styles.container}>
       <Cabecalho2 navigation={navigation} />
 
       <ScrollView contentContainerStyle={styles.listContainer}>
-        {animais.map((item) => (
-          <View key={item.id} style={styles.card}>
-            <Image
-              source={{ uri: item.imagem || 'https://via.placeholder.com/80' }}
-              style={styles.image}
-            />
-            <View style={{ flex: 1 }}>
-              <Text style={styles.nome}>{item.nome}</Text>
-              <Text style={styles.info}>{item.raca}</Text>
-              <Text style={styles.info}>{item.idade}</Text>
-            </View>
-            <View style={styles.botoes}>
-              <TouchableOpacity style={styles.botaoEditar} onPress={() => navigation.navigate('EditarAnimal', { animal: item })}>
-                <Text style={styles.textoEditar}>Editar</Text>
-              </TouchableOpacity>
+        
+        {animais.length === 0 ? (
+          <Text style={styles.emptyText}>Nenhum animal cadastrado ainda.</Text>
+        ) : (
+          animais.map((item) => (
+            <View key={item.id} style={styles.card}>
+              <Image
+                source={{ uri: item.imagem || 'https://via.placeholder.com/80' }}
+                style={styles.image}
+              />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.nome}>{item.nome}</Text>
+                <Text style={styles.info}>{item.raca}</Text>
+                <Text style={styles.info}>{item.idade}</Text>
+              </View>
+              <View style={styles.botoes}>
+                <TouchableOpacity style={styles.botaoEditar} onPress={() => navigation.navigate('EditarAnimal', { animal: item })}>
+                  <Text style={styles.textoEditar}>Editar</Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity style={styles.botaoExcluir} onPress={() => excluirAnimal(item.id)}>
-                <Text style={styles.textoExcluir}>Excluir</Text>
-              </TouchableOpacity>
+                <TouchableOpacity style={styles.botaoExcluir} onPress={() => excluirAnimal(item.id)}>
+                  <Text style={styles.textoExcluir}>Excluir</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        ))}
+          ))
+        )}
 
         <TouchableOpacity
           style={styles.adicionarButton}
@@ -92,6 +116,7 @@ export default function ListaPets({ navigation }) {
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
@@ -172,5 +197,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     marginBottom: 10
+  },
+  emptyText: {
+    textAlign: 'center',
+    marginTop: 50,
+    fontSize: 16,
+    color: '#888'
   }
 });
