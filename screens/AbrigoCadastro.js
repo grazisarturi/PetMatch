@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import Cabecalho1 from '../components/Cabecalho1';
 import { firebase } from '../firebase';
 const db = firebase.firestore();
@@ -10,12 +10,26 @@ export default function AbrigoCadastro({ navigation }) {
   const [cnpj, setCnpj] = useState('');
   const [telefone, setTelefone] = useState('');
   const [senha, setSenha] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  // SUGESTÃO: Função para formatar o CNPJ
+  const formatCnpj = (value) => {
+    return value
+      .replace(/\D/g, '')
+      .replace(/(\d{2})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d)/, '$1/$2')
+      .replace(/(\d{4})(\d)/, '$1-$2')
+      .slice(0, 18);
+  };
 
   const cadastrarAbrigo = async () => {
     if (!nome || !email || !cnpj || !telefone || !senha) {
       Alert.alert('Erro', 'Por favor, preencha todos os campos.');
       return;
     }
+
+    setLoading(true);
 
     try {
       const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, senha);
@@ -30,10 +44,19 @@ export default function AbrigoCadastro({ navigation }) {
       });
 
       Alert.alert('Sucesso', 'Abrigo cadastrado com sucesso!');
-      navigation.navigate('AbrigoDashboard');
+      // MELHORIA: Navega para a tela de login após o cadastro
+      navigation.navigate('Login');
     } catch (error) {
       console.error('Erro no cadastro de abrigo:', error);
-      Alert.alert('Erro', 'Não foi possível cadastrar. Verifique se o e-mail já foi usado.');
+      let errorMessage = 'Não foi possível cadastrar. Tente novamente.';
+      if (error.code === 'auth/email-already-in-use') {
+        errorMessage = 'Este e-mail já está em uso.';
+      } else if (error.code === 'auth/invalid-email') {
+        errorMessage = 'O formato do e-mail é inválido.';
+      }
+      Alert.alert('Erro', errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -55,12 +78,14 @@ export default function AbrigoCadastro({ navigation }) {
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
+          autoCapitalize="none"
         />
         <TextInput
           style={styles.input}
           placeholder="CNPJ"
           value={cnpj}
-          onChangeText={setCnpj}
+          onChangeText={(text) => setCnpj(formatCnpj(text))} // Aplica a formatação
+          keyboardType="numeric"
         />
         <TextInput
           style={styles.input}
@@ -71,14 +96,18 @@ export default function AbrigoCadastro({ navigation }) {
         />
         <TextInput
           style={styles.input}
-          placeholder="Senha"
+          placeholder="Senha (mínimo 6 caracteres)"
           value={senha}
           onChangeText={setSenha}
           secureTextEntry
         />
 
-        <TouchableOpacity style={styles.cadastrarButton} onPress={cadastrarAbrigo}>
-          <Text style={styles.cadastrarButtonText}>Cadastrar</Text>
+        <TouchableOpacity style={styles.cadastrarButton} onPress={cadastrarAbrigo} disabled={loading}>
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.cadastrarButtonText}>Cadastrar</Text>
+          )}
         </TouchableOpacity>
       </View>
     </View>
