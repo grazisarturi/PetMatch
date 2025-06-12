@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  ActivityIndicator, // Adicionado para feedback de carregamento
 } from 'react-native';
 import Cabecalho1 from '../components/Cabecalho1';
 import { firebase } from '../firebase';
@@ -15,12 +16,15 @@ const db = firebase.firestore();
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [loading, setLoading] = useState(false); // Adicionado estado de carregamento
 
   const handleLogin = async () => {
     if (!email || !senha) {
-      Alert.alert('Erro', 'Preencha todos os campos!');
+      Alert.alert('Erro', 'Por favor, preencha todos os campos!');
       return;
     }
+
+    setLoading(true); // Inicia o carregamento
 
     try {
       const userCredential = await firebase.auth().signInWithEmailAndPassword(email, senha);
@@ -29,9 +33,9 @@ export default function LoginScreen({ navigation }) {
       // Tentar achar o usuário como abrigo
       const abrigoDoc = await db.collection('abrigos').doc(userId).get();
       if (abrigoDoc.exists) {
-        navigation.navigate('AbrigoDashboard',{
-          cnpj
-        });
+        // CORRIGIDO: Passa os dados do abrigo para a próxima tela
+        navigation.navigate('AbrigoDashboard', { abrigo: abrigoDoc.data() });
+        setLoading(false);
         return;
       }
 
@@ -39,6 +43,7 @@ export default function LoginScreen({ navigation }) {
       const adotanteDoc = await db.collection('adotantes').doc(userId).get();
       if (adotanteDoc.exists) {
         navigation.navigate('Opcoes'); // tela inicial do adotante
+        setLoading(false);
         return;
       }
 
@@ -46,7 +51,14 @@ export default function LoginScreen({ navigation }) {
       Alert.alert('Erro', 'Usuário não classificado como abrigo ou adotante.');
     } catch (error) {
       console.log('Erro ao fazer login:', error);
-      Alert.alert('Erro', 'Credenciais inválidas.');
+      // MELHORIA: Mensagens de erro mais específicas
+      let errorMessage = 'Ocorreu um erro ao tentar fazer login. Tente novamente.';
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+        errorMessage = 'E-mail ou senha inválidos.';
+      }
+      Alert.alert('Erro', errorMessage);
+    } finally {
+      setLoading(false); // Finaliza o carregamento em todos os casos
     }
   };
 
@@ -62,6 +74,7 @@ export default function LoginScreen({ navigation }) {
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
+            autoCapitalize="none"
           />
           <TextInput
             style={styles.input}
@@ -71,8 +84,12 @@ export default function LoginScreen({ navigation }) {
             secureTextEntry
           />
 
-          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-            <Text style={styles.loginButtonText}>Login</Text>
+          <TouchableOpacity style={styles.loginButton} onPress={handleLogin} disabled={loading}>
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.loginButtonText}>Login</Text>
+            )}
           </TouchableOpacity>
 
           <View style={styles.dividerContainer}>
