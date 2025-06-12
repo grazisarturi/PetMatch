@@ -7,7 +7,7 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
-  ActivityIndicator, // Adicionado para feedback de carregamento
+  ActivityIndicator, 
 } from 'react-native';
 import Cabecalho1 from '../components/Cabecalho1';
 import { firebase } from '../firebase';
@@ -16,7 +16,7 @@ const db = firebase.firestore();
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
-  const [loading, setLoading] = useState(false); // Adicionado estado de carregamento
+  const [loading, setLoading] = useState(false); 
 
   const handleLogin = async () => {
     if (!email || !senha) {
@@ -24,41 +24,36 @@ export default function LoginScreen({ navigation }) {
       return;
     }
 
-    setLoading(true); // Inicia o carregamento
+    setLoading(true); 
 
     try {
       const userCredential = await firebase.auth().signInWithEmailAndPassword(email, senha);
       const userId = userCredential.user.uid;
 
-      // Tentar achar o usuário como abrigo
       const abrigoDoc = await db.collection('abrigos').doc(userId).get();
       if (abrigoDoc.exists) {
-        // CORRIGIDO: Passa os dados do abrigo para a próxima tela
         navigation.navigate('AbrigoDashboard', { abrigo: abrigoDoc.data() });
         setLoading(false);
         return;
       }
 
-      // Se não for abrigo, verificar se é adotante
       const adotanteDoc = await db.collection('adotantes').doc(userId).get();
       if (adotanteDoc.exists) {
-        navigation.navigate('Opcoes'); // tela inicial do adotante
+        navigation.navigate('Opcoes'); 
         setLoading(false);
         return;
       }
 
-      // Se não for nenhum dos dois
       Alert.alert('Erro', 'Usuário não classificado como abrigo ou adotante.');
     } catch (error) {
       console.log('Erro ao fazer login:', error);
-      // MELHORIA: Mensagens de erro mais específicas
       let errorMessage = 'Ocorreu um erro ao tentar fazer login. Tente novamente.';
       if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
         errorMessage = 'E-mail ou senha inválidos.';
       }
       Alert.alert('Erro', errorMessage);
     } finally {
-      setLoading(false); // Finaliza o carregamento em todos os casos
+      setLoading(false); 
     }
   };
 

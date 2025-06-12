@@ -12,7 +12,7 @@ export default function AbrigoCadastro({ navigation }) {
   const [senha, setSenha] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // SUGESTÃO: Função para formatar o CNPJ
+  
   const formatCnpj = (value) => {
     return value
       .replace(/\D/g, '')
@@ -44,7 +44,7 @@ export default function AbrigoCadastro({ navigation }) {
       });
 
       Alert.alert('Sucesso', 'Abrigo cadastrado com sucesso!');
-      // MELHORIA: Navega para a tela de login após o cadastro
+      
       navigation.navigate('Login');
     } catch (error) {
       console.error('Erro no cadastro de abrigo:', error);
@@ -84,7 +84,7 @@ export default function AbrigoCadastro({ navigation }) {
           style={styles.input}
           placeholder="CNPJ"
           value={cnpj}
-          onChangeText={(text) => setCnpj(formatCnpj(text))} // Aplica a formatação
+          onChangeText={(text) => setCnpj(formatCnpj(text))}
           keyboardType="numeric"
         />
         <TextInput
