@@ -30,7 +30,7 @@ export default function LoginScreen({ navigation }) {
       const abrigoDoc = await db.collection('abrigos').doc(userId).get();
       if (abrigoDoc.exists) {
         navigation.navigate('AbrigoDashboard',{
-          cnpj: abrigoDoc.data().cnpj,
+          cnpj
         });
         return;
       }

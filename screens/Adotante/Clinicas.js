@@ -1,5 +1,7 @@
+// screens/Adotante/Clinicas.js
+
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, FlatList, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TextInput, FlatList, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Cabecalho2 from '../../components/Cabecalho2';
 import { firebase } from '../../firebase';
@@ -7,9 +9,12 @@ import { firebase } from '../../firebase';
 const db = firebase.firestore();
 
 export default function Clinicas({ navigation }) {
-  const [clinicas, setClinicas] = useState([]);
+  const [todasClinicas, setTodasClinicas] = useState([]); // Guarda a lista original
+  const [clinicasFiltradas, setClinicasFiltradas] = useState([]); // Lista para ser exibida
+  
   const [nomeFiltro, setNomeFiltro] = useState('');
   const [localizacaoFiltro, setLocalizacaoFiltro] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = db.collection('clinicas').onSnapshot(snapshot => {
@@ -17,21 +22,43 @@ export default function Clinicas({ navigation }) {
       snapshot.forEach(doc => {
         lista.push({ id: doc.id, ...doc.data() });
       });
-      setClinicas(lista);
+      setTodasClinicas(lista);
+      setClinicasFiltradas(lista); // Inicialmente, mostra todas
+      setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
 
+  // CORRIGIDO: Função que aplica os filtros
   const aplicarFiltros = () => {
-    return clinicas.filter((clinica) => {
-      const nomeMatch = clinica.nome?.toLowerCase().includes(nomeFiltro.toLowerCase());
-      const localMatch = clinica.localizacao?.toLowerCase().includes(localizacaoFiltro.toLowerCase());
-      return nomeMatch && localMatch;
-    });
-  };
+    let resultado = todasClinicas;
 
-  const clinicasFiltradas = aplicarFiltros();
+    if (nomeFiltro.trim() !== '') {
+      resultado = resultado.filter((clinica) =>
+        clinica.nome?.toLowerCase().includes(nomeFiltro.toLowerCase())
+      );
+    }
+
+    if (localizacaoFiltro.trim() !== '') {
+      resultado = resultado.filter((clinica) =>
+        clinica.localizacao?.toLowerCase().includes(localizacaoFiltro.toLowerCase())
+      );
+    }
+
+    setClinicasFiltradas(resultado);
+  };
+  
+  // ADICIONADO: Função para limpar os filtros
+  const limparFiltros = () => {
+      setNomeFiltro('');
+      setLocalizacaoFiltro('');
+      setClinicasFiltradas(todasClinicas); // Volta a exibir a lista completa
+  }
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#1a7f37" style={{flex: 1}}/>
+  }
 
   return (
     <View style={styles.container}>
@@ -42,28 +69,33 @@ export default function Clinicas({ navigation }) {
       <Text style={styles.label}>Nome da Clínica Veterinária / Pet Shop:</Text>
       <View style={styles.selectInput}>
         <TextInput
-          placeholder=""
+          placeholder="Digite o nome..."
           value={nomeFiltro}
           onChangeText={setNomeFiltro}
           style={styles.textInput}
         />
-        <Ionicons name="chevron-down" size={20} color="#1a7f37" />
       </View>
 
       <Text style={styles.label}>Localização:</Text>
       <View style={styles.selectInput}>
         <TextInput
-          placeholder=""
+          placeholder="Digite a cidade ou bairro..."
           value={localizacaoFiltro}
           onChangeText={setLocalizacaoFiltro}
           style={styles.textInput}
         />
-        <Ionicons name="chevron-down" size={20} color="#1a7f37" />
+      </View>
+      
+      {/* CORRIGIDO: Botões agora funcionam */}
+      <View style={styles.botoesContainer}>
+        <TouchableOpacity style={styles.botao} onPress={aplicarFiltros}>
+            <Text style={styles.botaoTexto}>Aplicar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.botaoLimpar} onPress={limparFiltros}>
+            <Text style={styles.botaoTexto}>Limpar</Text>
+        </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.botao}>
-        <Text style={styles.botaoTexto}>Aplicar</Text>
-      </TouchableOpacity>
 
       <FlatList
         data={clinicasFiltradas}
@@ -73,13 +105,14 @@ export default function Clinicas({ navigation }) {
             style={styles.card}
             onPress={() => navigation.navigate('DetalhesClinica', { clinica: item })}
           >
-            <Image source={{ uri: item.logoUrl }} style={styles.logoClinica} />
+            <Image source={{ uri: item.logoUrl || 'https://via.placeholder.com/40' }} style={styles.logoClinica} />
             <View style={{ flex: 1 }}>
               <Text style={styles.nome} numberOfLines={1}>{item.nome}</Text>
               <Text style={styles.local}>📍 {item.localizacao}</Text>
             </View>
           </TouchableOpacity>
         )}
+        ListEmptyComponent={<Text style={styles.emptyText}>Nenhuma clínica encontrada.</Text>}
         contentContainerStyle={styles.list}
       />
 
@@ -92,29 +125,11 @@ export default function Clinicas({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 50,
-    marginHorizontal: 16,
-  },
-  logo: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    color: '#1a7f37',
-  },
-  linhaInferior: {
-    height: 4,
-    backgroundColor: '#1a7f37',
-    width: '100%',
-    marginBottom: 10,
-  },
   subtitulo: {
     textAlign: 'center',
     fontWeight: 'bold',
     fontSize: 14,
-    marginBottom: 20,
+    marginVertical: 20,
     paddingHorizontal: 20,
   },
   label: {
@@ -138,13 +153,27 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     fontSize: 14,
   },
+  botoesContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginHorizontal: 16,
+    marginBottom: 20,
+  },
   botao: {
+    flex: 1,
     backgroundColor: '#1a7f37',
-    marginHorizontal: 100,
     padding: 12,
     borderRadius: 6,
     alignItems: 'center',
-    marginBottom: 20,
+    marginRight: 5,
+  },
+  botaoLimpar: {
+    flex: 1,
+    backgroundColor: '#ccc',
+    padding: 12,
+    borderRadius: 6,
+    alignItems: 'center',
+    marginLeft: 5,
   },
   botaoTexto: {
     color: '#fff',
@@ -189,4 +218,10 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '100%',
   },
+   emptyText: {
+    textAlign: 'center',
+    marginTop: 50,
+    fontSize: 16,
+    color: '#888'
+  }
 });

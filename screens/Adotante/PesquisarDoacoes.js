@@ -1,3 +1,5 @@
+// screens/Adotante/PesquisarDoacoes.js
+
 import React, { useEffect, useState } from 'react';
 import {
   View,
@@ -7,6 +9,7 @@ import {
   FlatList,
   TouchableOpacity,
   Image,
+  ActivityIndicator
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Cabecalho2 from '../../components/Cabecalho2';
@@ -15,42 +18,63 @@ import { firebase } from '../../firebase';
 const db = firebase.firestore();
 
 export default function PesquisarDoacoes({ navigation }) {
-  const [localizacao, setLocalizacao] = useState('');
-  const [abrigoSelecionado, setAbrigoSelecionado] = useState('');
-  const [todasDoacoes, setTodasDoacoes] = useState([]);
-  const [filtradas, setFiltradas] = useState([]);
+  const [localizacaoFiltro, setLocalizacaoFiltro] = useState('');
+  const [abrigoFiltro, setAbrigoFiltro] = useState('');
+
+  const [todosAbrigos, setTodosAbrigos] = useState([]);
+  const [abrigosFiltrados, setAbrigosFiltrados] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Busca todos os pedidos de doação para encontrar os abrigos únicos
     const unsubscribe = db.collection('doacoes').onSnapshot(snapshot => {
-      const lista = [];
+      const abrigosMap = new Map();
       snapshot.forEach(doc => {
-        lista.push({ id: doc.id, ...doc.data() });
+        const data = doc.data();
+        // Usamos o ID do abrigo para garantir que cada abrigo apareça apenas uma vez
+        if (data.abrigoId && !abrigosMap.has(data.abrigoId)) {
+          abrigosMap.set(data.abrigoId, {
+            id: data.abrigoId,
+            nome: data.abrigo,
+            localizacao: data.localizacao
+          });
+        }
       });
-      setTodasDoacoes(lista);
-      setFiltradas(lista); // mostra tudo inicialmente
+      
+      const listaUnicaDeAbrigos = Array.from(abrigosMap.values());
+      setTodosAbrigos(listaUnicaDeAbrigos);
+      setAbrigosFiltrados(listaUnicaDeAbrigos);
+      setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
 
   const aplicarFiltro = () => {
-    const resultado = todasDoacoes.filter((d) => {
-      const abrigoMatch =
-        abrigoSelecionado.trim() === '' ||
-        (d.abrigo && d.abrigo.toLowerCase().includes(abrigoSelecionado.toLowerCase()));
-      const localMatch =
-        localizacao.trim() === '' ||
-        (d.localizacao && d.localizacao.toLowerCase().includes(localizacao.toLowerCase()));
-      return abrigoMatch && localMatch;
-    });
-    setFiltradas(resultado);
+    let resultado = todosAbrigos;
+
+    if (abrigoFiltro.trim() !== '') {
+        resultado = resultado.filter(abrigo => 
+            abrigo.nome.toLowerCase().includes(abrigoFiltro.toLowerCase())
+        );
+    }
+    if (localizacaoFiltro.trim() !== '') {
+        resultado = resultado.filter(abrigo => 
+            abrigo.localizacao.toLowerCase().includes(localizacaoFiltro.toLowerCase())
+        );
+    }
+    setAbrigosFiltrados(resultado);
   };
 
   const limparFiltro = () => {
-    setAbrigoSelecionado('');
-    setLocalizacao('');
-    setFiltradas(todasDoacoes);
+    setAbrigoFiltro('');
+    setLocalizacaoFiltro('');
+    setAbrigosFiltrados(todosAbrigos);
   };
+
+  if (loading) {
+      return <ActivityIndicator size="large" color="#1a7f37" style={{flex: 1}}/>
+  }
 
   return (
     <View style={styles.container}>
@@ -60,14 +84,12 @@ export default function PesquisarDoacoes({ navigation }) {
 
       <Text style={styles.label}>Nome do abrigo:</Text>
       <View style={styles.selectInput}>
-        <TextInput value={abrigoSelecionado} onChangeText={setAbrigoSelecionado} style={styles.textInput} />
-        <Ionicons name="chevron-down" size={20} color="#1a7f37" />
+        <TextInput value={abrigoFiltro} onChangeText={setAbrigoFiltro} style={styles.textInput} placeholder="Digite o nome do abrigo" />
       </View>
 
       <Text style={styles.label}>Localização:</Text>
       <View style={styles.selectInput}>
-        <TextInput value={localizacao} onChangeText={setLocalizacao} style={styles.textInput} />
-        <Ionicons name="chevron-down" size={20} color="#1a7f37" />
+        <TextInput value={localizacaoFiltro} onChangeText={setLocalizacaoFiltro} style={styles.textInput} placeholder="Digite a cidade ou bairro" />
       </View>
 
       <View style={styles.botoesContainer}>
@@ -80,17 +102,23 @@ export default function PesquisarDoacoes({ navigation }) {
       </View>
 
       <FlatList
-        data={filtradas}
+        data={abrigosFiltrados}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ paddingBottom: 80 }}
+        ListEmptyComponent={<Text style={styles.emptyText}>Nenhum abrigo encontrado.</Text>}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.card}
-            onPress={() => navigation.navigate('Doacoes', { abrigo: item })}
+            // CORRIGIDO: Passa o ID e o Nome do abrigo para a próxima tela
+            onPress={() => navigation.navigate('Doacoes', { 
+                abrigoId: item.id,
+                abrigoNome: item.nome,
+                abrigoLocalizacao: item.localizacao
+            })}
           >
             <Image source={require('../../images/logo.png')} style={styles.img} />
             <View style={styles.cardContent}>
-              <Text style={styles.nomeAbrigo} numberOfLines={1}>{item.abrigo}</Text>
+              <Text style={styles.nomeAbrigo} numberOfLines={1}>{item.nome}</Text>
               <Text style={styles.local}>{item.localizacao}</Text>
             </View>
           </TouchableOpacity>
@@ -144,20 +172,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 10,
     marginBottom: 20,
+    marginHorizontal: 20,
   },
   botao: {
+    flex: 1,
     backgroundColor: '#1a7f37',
     padding: 12,
     borderRadius: 6,
     alignItems: 'center',
-    minWidth: 100,
   },
   botaoLimpar: {
+    flex: 1,
     backgroundColor: '#ccc',
     padding: 12,
     borderRadius: 6,
     alignItems: 'center',
-    minWidth: 100,
   },
   botaoTexto: {
     color: '#fff',
@@ -186,11 +215,11 @@ const styles = StyleSheet.create({
   },
   nomeAbrigo: {
     fontWeight: 'bold',
-    fontSize: 12,
+    fontSize: 14,
     marginBottom: 2,
   },
   local: {
-    fontSize: 11,
+    fontSize: 12,
     color: '#2e7d32',
   },
   footer: {
@@ -201,4 +230,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#1a7f37',
     alignItems: 'center',
   },
+  emptyText: {
+      textAlign: 'center',
+      marginTop: 30,
+      color: '#777'
+  }
 });

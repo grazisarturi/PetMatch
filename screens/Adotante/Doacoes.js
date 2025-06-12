@@ -1,6 +1,7 @@
 // screens/Adotante/Doacoes.js
+
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Cabecalho2 from '../../components/Cabecalho2';
 import { firebase } from '../../firebase';
@@ -8,22 +9,31 @@ import { firebase } from '../../firebase';
 const db = firebase.firestore();
 
 export default function Doacoes({ route, navigation }) {
-  const { abrigo } = route.params;
+  // CORRIGIDO: Recebe os parâmetros corretos
+  const { abrigoId, abrigoNome, abrigoLocalizacao } = route.params;
   const [doacoes, setDoacoes] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!abrigoId) {
+        setLoading(false);
+        return;
+    };
+
+    // CORRIGIDO: Busca as doações usando o ID do abrigo
     const unsubscribe = db.collection('doacoes')
-      .where('abrigo', '==', abrigo.abrigo || abrigo.nome)
+      .where('abrigoId', '==', abrigoId)
       .onSnapshot(snapshot => {
         const lista = [];
         snapshot.forEach(doc => {
           lista.push({ id: doc.id, ...doc.data() });
         });
         setDoacoes(lista);
+        setLoading(false);
       });
 
     return () => unsubscribe();
-  }, []);
+  }, [abrigoId]);
 
   return (
     <View style={styles.container}>
@@ -31,27 +41,34 @@ export default function Doacoes({ route, navigation }) {
 
       <Image source={require('../../images/capa.jpg')} style={styles.imagemCapa} />
       <Image source={require('../../images/logo.png')} style={styles.logoAbrigo} />
-      <Text style={styles.nomeAbrigo}>{abrigo.abrigo || abrigo.nome}</Text>
-      <Text style={styles.local}>📍 {abrigo.localizacao}</Text>
+      
+      <Text style={styles.nomeAbrigo}>{abrigoNome}</Text>
+      <Text style={styles.local}>📍 {abrigoLocalizacao}</Text>
 
-      <FlatList
-        data={doacoes}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Image source={require('../../images/racao-caes.jpg')} style={styles.image} />
-            <Text style={styles.name}>{item.item}</Text>
-            {item.descricao ? (
-              <Text style={styles.observacao}>
-                <Text style={{ fontWeight: 'bold' }}>Observação:</Text> {item.descricao}
-              </Text>
-            ) : null}
-          </View>
-        )}
-        contentContainerStyle={styles.list}
-        numColumns={2}
-        showsVerticalScrollIndicator={false}
-      />
+      {loading ? (
+        <ActivityIndicator size="large" color="#1a7f37"/>
+      ) : (
+        <FlatList
+            data={doacoes}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+            <View style={styles.card}>
+                <Image source={{uri: item.imagem || 'https://images.tcdn.com.br/img/img_prod/749536/racao_three_dogs_orig_para_caes_adultos_racas_pequenas_frango_carne_e_arroz_1kg_1529_1_f1068205628b03126f59cd68c92a9900.jpg'}} style={styles.image} />
+                <Text style={styles.name}>{item.item}</Text>
+                <Text style={styles.quantity}>Qtd: {item.quantidade}</Text>
+                {item.descricao ? (
+                <Text style={styles.observacao} numberOfLines={2}>
+                    <Text style={{ fontWeight: 'bold' }}>Obs:</Text> {item.descricao}
+                </Text>
+                ) : null}
+            </View>
+            )}
+            ListEmptyComponent={<Text style={styles.emptyText}>Este abrigo não tem pedidos de doação no momento.</Text>}
+            contentContainerStyle={styles.list}
+            numColumns={2}
+            showsVerticalScrollIndicator={false}
+        />
+      )}
 
       <View style={styles.footer}>
         <Ionicons name="home-outline" size={25} color="#fff" onPress={() => navigation.navigate('Opcoes')} />
@@ -62,23 +79,6 @@ export default function Doacoes({ route, navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 50,
-    paddingHorizontal: 20,
-  },
-  logo: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    color: '#1a7f37',
-  },
-  linhaInferior: {
-    height: 4,
-    backgroundColor: '#1a7f37',
-    width: '100%',
-  },
   imagemCapa: {
     width: '100%',
     height: 130,
@@ -89,15 +89,17 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 50,
     position: 'absolute',
-    top: 230,
+    top: 150, // Ajuste para descer um pouco
     alignSelf: 'center',
     backgroundColor: '#fff',
-    borderWidth: 1,
+    borderWidth: 2,
+    borderColor: '#1a7f37'
   },
   nomeAbrigo: {
     textAlign: 'center',
-    marginTop: 70,
+    marginTop: 60, // Aumentado para dar espaço ao logo
     fontWeight: 'bold',
+    fontSize: 18
   },
   local: {
     textAlign: 'center',
@@ -107,15 +109,14 @@ const styles = StyleSheet.create({
   },
   list: {
     paddingBottom: 80,
-    justifyContent: 'center',
-    alignItems: 'center',
+    paddingHorizontal: 10
   },
   card: {
     backgroundColor: '#d9fdd3',
     borderRadius: 12,
     padding: 12,
     margin: 8,
-    width: 150,
+    flex: 1, // Para ocupar o espaço da coluna
     alignItems: 'center',
     borderColor: '#1a7f37',
     borderWidth: 1.5,
@@ -130,12 +131,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 6,
+    marginBottom: 4,
+  },
+  quantity: {
+    fontSize: 13,
+    color: '#333'
   },
   observacao: {
     fontSize: 12,
     textAlign: 'center',
-    color: '#333',
+    color: '#555',
+    marginTop: 4,
   },
   footer: {
     backgroundColor: '#1a7f37',
@@ -145,4 +151,11 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '100%',
   },
+   emptyText: {
+    width: '100%',
+    textAlign: 'center',
+    marginTop: 50,
+    fontSize: 16,
+    color: '#888'
+  }
 });

@@ -1,5 +1,7 @@
+// screens/Adotante/DetalhesAnimal.js
+
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native'; // Adicionado TouchableOpacity
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { firebase } from '../../firebase';
@@ -14,13 +16,22 @@ export default function DetalhesAnimal() {
 
   const [animal, setAnimal] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [abrigoInfo, setAbrigoInfo] = useState(null); // ADICIONADO: para guardar dados do abrigo
 
   useEffect(() => {
     const buscarAnimal = async () => {
       try {
         const docRef = await db.collection('animais').doc(id).get();
         if (docRef.exists) {
-          setAnimal({ id: docRef.id, ...docRef.data() });
+          const animalData = { id: docRef.id, ...docRef.data() };
+          setAnimal(animalData);
+          // ADICIONADO: Buscar dados do abrigo após encontrar o animal
+          if (animalData.abrigoId) {
+            const abrigoDoc = await db.collection('abrigos').doc(animalData.abrigoId).get();
+            if (abrigoDoc.exists) {
+              setAbrigoInfo(abrigoDoc.data());
+            }
+          }
         }
       } catch (error) {
         console.error('Erro ao buscar animal:', error);
@@ -42,6 +53,7 @@ export default function DetalhesAnimal() {
   if (!animal) {
     return (
       <View style={styles.container}>
+         <Cabecalho2 navigation={navigation} />
         <Text style={styles.errorText}>Animal não encontrado.</Text>
       </View>
     );
@@ -53,10 +65,10 @@ export default function DetalhesAnimal() {
       <View style={styles.divisor} />
 
       <ScrollView contentContainerStyle={styles.content}>
-        <Image source={{ uri: animal.foto }} style={styles.image} />
+        <Image source={{ uri: animal.imagem || 'https://via.placeholder.com/260' }} style={styles.image} />
 
         <Text style={styles.nome}>
-          {animal.nome}, {animal.idade} {animal.idade == 1 ? 'mês' : 'meses'}
+          {animal.nome}, {animal.idade}
         </Text>
 
         <View style={styles.localBox}>
@@ -70,22 +82,28 @@ export default function DetalhesAnimal() {
         <Text style={styles.info}><Text style={styles.bold}>Raça:</Text> {animal.raca}</Text>
         <Text style={styles.info}><Text style={styles.bold}>Castrado:</Text> {animal.castrado ? 'Sim' : 'Não'}</Text>
         <Text style={styles.info}><Text style={styles.bold}>Descrição:</Text> {animal.descricao}</Text>
+        {/* Mostra o nome do abrigo se encontrado */}
+        {abrigoInfo && <Text style={styles.info}><Text style={styles.bold}>Abrigo:</Text> {abrigoInfo.nome}</Text>}
       </ScrollView>
 
-{  console.log(animal)}
-
-
       <View style={styles.footer}>
-        <Ionicons name="home-outline" size={25} color="#fff" onPress={() => navigation.navigate('Opcoes')} />
-        <Ionicons name="paw-outline" size={25} color="#fff" onPress={() => navigation.navigate('Chat', {
-          abrigoId: animal.abrigoId,
-          nomeContato: animal.nome,
-        })}/>
+        <TouchableOpacity onPress={() => navigation.navigate('Opcoes')}>
+            <Ionicons name="home-outline" size={25} color="#fff" />
+        </TouchableOpacity>
+        {/* CORRIGIDO: Navegação para o chat unificado */}
+        <TouchableOpacity onPress={() => navigation.navigate('ChatScreen', {
+          // Passando os IDs e Nomes necessários para a tela de chat
+          otherUserId: animal.abrigoId,
+          otherUserName: abrigoInfo?.nome || 'Abrigo',
+        })}>
+            <Ionicons name="paw-outline" size={25} color="#fff" />
+        </TouchableOpacity>
       </View>
     </View>
   );
 }
 
+// ESTILOS (adicionado TouchableOpacity no footer)
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
   content: {
