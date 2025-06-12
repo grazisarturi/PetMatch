@@ -1,7 +1,5 @@
-// screens/Adotante/DetalhesAnimal.js
-
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native'; // Adicionado TouchableOpacity
+import { View, Text, Image, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { firebase } from '../../firebase';
@@ -16,7 +14,7 @@ export default function DetalhesAnimal() {
 
   const [animal, setAnimal] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [abrigoInfo, setAbrigoInfo] = useState(null); // ADICIONADO: para guardar dados do abrigo
+  const [abrigoInfo, setAbrigoInfo] = useState(null);
 
   useEffect(() => {
     const buscarAnimal = async () => {
@@ -25,7 +23,6 @@ export default function DetalhesAnimal() {
         if (docRef.exists) {
           const animalData = { id: docRef.id, ...docRef.data() };
           setAnimal(animalData);
-          // ADICIONADO: Buscar dados do abrigo após encontrar o animal
           if (animalData.abrigoId) {
             const abrigoDoc = await db.collection('abrigos').doc(animalData.abrigoId).get();
             if (abrigoDoc.exists) {
@@ -53,7 +50,7 @@ export default function DetalhesAnimal() {
   if (!animal) {
     return (
       <View style={styles.container}>
-         <Cabecalho2 navigation={navigation} />
+          <Cabecalho2 navigation={navigation} />
         <Text style={styles.errorText}>Animal não encontrado.</Text>
       </View>
     );
@@ -65,7 +62,10 @@ export default function DetalhesAnimal() {
       <View style={styles.divisor} />
 
       <ScrollView contentContainerStyle={styles.content}>
-        <Image source={{ uri: animal.imagem || 'https://via.placeholder.com/260' }} style={styles.image} />
+        <Image
+          source={{ uri: 'https://cdn-icons-png.flaticon.com/512/616/616408.png' }}
+          style={styles.image}
+        />
 
         <Text style={styles.nome}>
           {animal.nome}, {animal.idade}
@@ -82,33 +82,30 @@ export default function DetalhesAnimal() {
         <Text style={styles.info}><Text style={styles.bold}>Raça:</Text> {animal.raca}</Text>
         <Text style={styles.info}><Text style={styles.bold}>Castrado:</Text> {animal.castrado ? 'Sim' : 'Não'}</Text>
         <Text style={styles.info}><Text style={styles.bold}>Descrição:</Text> {animal.descricao}</Text>
-        {/* Mostra o nome do abrigo se encontrado */}
+
         {abrigoInfo && <Text style={styles.info}><Text style={styles.bold}>Abrigo:</Text> {abrigoInfo.nome}</Text>}
       </ScrollView>
 
       <View style={styles.footer}>
         <TouchableOpacity onPress={() => navigation.navigate('Opcoes')}>
-            <Ionicons name="home-outline" size={25} color="#fff" />
+            <Ionicons name="home-outline" size={30} color="#fff" />
         </TouchableOpacity>
-        {/* CORRIGIDO: Navegação para o chat unificado */}
         <TouchableOpacity onPress={() => navigation.navigate('ChatScreen', {
-          // Passando os IDs e Nomes necessários para a tela de chat
           otherUserId: animal.abrigoId,
           otherUserName: abrigoInfo?.nome || 'Abrigo',
         })}>
-            <Ionicons name="paw-outline" size={25} color="#fff" />
+            <Ionicons name="paw" size={30} color="#fff" />
         </TouchableOpacity>
       </View>
     </View>
   );
 }
 
-// ESTILOS (adicionado TouchableOpacity no footer)
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
   content: {
     padding: 20,
-    paddingBottom: 100,
+    paddingBottom: 100, 
     alignItems: 'center',
   },
   loader: {
@@ -129,9 +126,10 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: 260,
-    resizeMode: 'cover',
+    resizeMode: 'contain', 
     marginBottom: 20,
     borderRadius: 10,
+    backgroundColor: '#f0f0f0', 
   },
   nome: {
     fontSize: 22,
@@ -153,6 +151,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     color: '#333',
     alignSelf: 'flex-start',
+    width: '100%',
   },
   bold: {
     fontWeight: 'bold',
@@ -161,7 +160,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1a7f37',
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingVertical: 16,
+    paddingVertical: 12,
     position: 'absolute',
     bottom: 0,
     width: '100%',

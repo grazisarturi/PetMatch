@@ -1,7 +1,8 @@
-// screens/PedidoDoacao.js
-
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import {
+  View, Text, TextInput, StyleSheet, TouchableOpacity,
+  ScrollView, Alert, ActivityIndicator
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Cabecalho2 from '../components/Cabecalho2';
 import { firebase } from '../firebase';
@@ -12,11 +13,11 @@ export default function PedidoDoacao({ navigation }) {
   const [item, setItem] = useState('');
   const [quantidade, setQuantidade] = useState('');
   const [descricao, setDescricao] = useState('');
+  const [abrigo, setAbrigo] = useState('');
+  const [localizacao, setLocalizacao] = useState('');
   const [abrigoInfo, setAbrigoInfo] = useState(null);
-  
-  // ADICIONADO: Estado de carregamento para controlar o botão
   const [isLoading, setIsLoading] = useState(true);
-  
+
   const userId = firebase.auth().currentUser?.uid;
 
   useEffect(() => {
@@ -24,56 +25,54 @@ export default function PedidoDoacao({ navigation }) {
       db.collection('abrigos').doc(userId).get()
         .then(doc => {
           if (doc.exists) {
-            setAbrigoInfo(doc.data());
+            const data = doc.data();
+            setAbrigoInfo(data);
+            setAbrigo(data.nome || '');
+            setLocalizacao(data.localizacao || '');
           }
         })
-        .finally(() => {
-          // ATUALIZADO: Libera o carregamento (e o botão) quando a busca termina
-          setIsLoading(false);
-        });
+        .finally(() => setIsLoading(false));
     } else {
-        setIsLoading(false);
+      setIsLoading(false);
     }
   }, [userId]);
-  
+
   const handlePedido = async () => {
-    // ATUALIZADO: Bloqueia a função se estiver carregando
     if (isLoading) return;
 
-    if (!item || !quantidade) {
-      Alert.alert('Erro', 'Os campos "Item" e "Quantidade" são obrigatórios.');
+    if (!item || !quantidade || !abrigo) {
+      Alert.alert('Erro', 'Preencha os campos obrigatórios.');
       return;
     }
 
-    if (!userId || !abrigoInfo) {
-      Alert.alert('Erro', 'Não foi possível identificar o abrigo. Tente novamente.');
+    if (!userId) {
+      Alert.alert('Erro', 'Usuário não autenticado.');
       return;
     }
-    
-    setIsLoading(true); // Bloqueia o botão novamente para evitar cliques duplos
+
+    setIsLoading(true);
 
     try {
       await db.collection('doacoes').add({
         item,
         quantidade,
         descricao,
+        abrigo,
         abrigoId: userId,
-        abrigo: abrigoInfo.nome,
-        // CORRIGIDO: Garante que a localização seja salva (se existir no perfil do abrigo)
-        localizacao: abrigoInfo.localizacao || 'Não informada',
+        localizacao,
         criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
       });
-      
-      Alert.alert('Sucesso', 'Pedido de doação enviado com sucesso!');
+
+      Alert.alert('Sucesso', 'Pedido de doação criado com sucesso!');
       navigation.goBack();
-      
-    } catch(error) {
+
+    } catch (error) {
       console.error("Erro ao criar pedido:", error);
-      Alert.alert('Erro', 'Ocorreu um erro ao criar o pedido de doação.');
+      Alert.alert('Erro', 'Erro ao criar pedido de doação.');
     } finally {
-      setIsLoading(false); // Libera o botão
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -81,58 +80,57 @@ export default function PedidoDoacao({ navigation }) {
 
       <ScrollView contentContainerStyle={styles.form}>
         <Text style={styles.title}>Criar Pedido de Doação</Text>
-        
-        <View style={styles.inputGroup}>
-            <Text style={styles.label}>Item*</Text>
-            <TextInput style={styles.input} value={item} onChangeText={setItem} placeholder="Ex: Ração para filhotes"/>
-        </View>
 
-        <View style={styles.inputGroup}>
-            <Text style={styles.label}>Quantidade*</Text>
-            <TextInput style={styles.input} value={quantidade} onChangeText={setQuantidade} placeholder="Ex: 10kg"/>
-        </View>
+        <Text style={styles.label}>Item</Text>
+        <TextInput style={styles.input} value={item} onChangeText={setItem} />
 
-        <View style={styles.inputGroup}>
-            <Text style={styles.label}>Descrição (Opcional)</Text>
-            <TextInput style={[styles.input, { height: 80 }]} multiline value={descricao} onChangeText={setDescricao} placeholder="Alguma observação sobre o item?"/>
-        </View>
+        <Text style={styles.label}>Quantidade</Text>
+        <TextInput style={styles.input} value={quantidade} onChangeText={setQuantidade} />
 
-        {/* ATUALIZADO: O botão agora usa o estado de isLoading */}
+        <Text style={styles.label}>Abrigo</Text>
+        <TextInput style={styles.input} value={abrigo} onChangeText={setAbrigo} />
+
+        <Text style={styles.label}>Localização</Text>
+        <TextInput style={styles.input} value={localizacao} onChangeText={setLocalizacao} />
+
+        <Text style={styles.label}>Descrição</Text>
+        <TextInput
+          style={[styles.input, { height: 80 }]}
+          multiline
+          value={descricao}
+          onChangeText={setDescricao}
+        />
+
         <TouchableOpacity
-            style={[styles.botao, isLoading && styles.botaoDesabilitado]} // Aplica estilo de desabilitado
-            onPress={handlePedido}
-            disabled={isLoading} // Desabilita o botão enquanto carrega
+          style={[styles.botao, isLoading && styles.botaoDesabilitado]}
+          onPress={handlePedido}
+          disabled={isLoading}
         >
-            {isLoading ? (
-                <ActivityIndicator color="#fff" />
-            ) : (
-                <Text style={styles.botaoTexto}>Adicionar Pedido</Text>
-            )}
+          {isLoading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.botaoTexto}>Adicionar Pedido</Text>
+          )}
         </TouchableOpacity>
-    </ScrollView>
+      </ScrollView>
 
       <View style={styles.footer}>
-            <Ionicons name="home-outline" size={25} color="#fff" 
-            onPress={() => navigation.navigate('AbrigoDashboard')}/>
-        </View>
+        <Ionicons name="home-outline" size={25} color="#fff"
+          onPress={() => navigation.navigate('AbrigoDashboard')} />
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
-  form: {
-    padding: 20
-  },
+  form: { padding: 20 },
   title: {
     fontSize: 22,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20,
     color: '#333'
-  },
-  inputGroup: {
-    marginBottom: 15
   },
   label: {
     fontWeight: 'bold',
@@ -141,9 +139,10 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#000',
     borderRadius: 6,
     padding: 12,
+    marginBottom: 15
   },
   botao: {
     backgroundColor: '#1a7f37',
@@ -152,7 +151,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10
   },
-  // ADICIONADO: Estilo para o botão desabilitado
   botaoDesabilitado: {
     backgroundColor: '#999'
   },

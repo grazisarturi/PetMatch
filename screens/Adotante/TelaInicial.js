@@ -1,5 +1,3 @@
-// screens/Adotante/TelaInicial.js
-
 import React, { useState, useRef, useEffect } from 'react';
 import {
   View, Text, StyleSheet, FlatList, Image, TouchableOpacity, Animated,
@@ -16,14 +14,14 @@ export default function Home({ navigation }) {
   const [showFilters, setShowFilters] = useState(false);
   const slideAnim = useRef(new Animated.Value(-width)).current;
 
-  // Estados dos filtros
   const [idade, setIdade] = useState('');
   const [localizacao, setLocalizacao] = useState('');
   const [especie, setEspecie] = useState('');
   const [sexo, setSexo] = useState('');
   const [porte, setPorte] = useState('');
 
-  const [pets, setPets] = useState([]);
+  const [allPets, setAllPets] = useState([]); 
+  const [filteredPets, setFilteredPets] = useState([]); 
   const [loading, setLoading] = useState(true);
 
   const toggleFilters = () => {
@@ -34,47 +32,59 @@ export default function Home({ navigation }) {
     }).start(() => setShowFilters(!showFilters));
   };
 
-  // CORRIGIDO: Função para buscar pets com filtros
-  const fetchPets = async () => {
-    setLoading(true);
-    try {
-      let query = db.collection('animais');
-
-      if (idade) query = query.where('idade', '==', idade);
-      if (localizacao) query = query.where('localizacao', '>=', localizacao).where('localizacao', '<=', localizacao + '\uf8ff');
-      if (especie) query = query.where('especie', '==', especie);
-      if (sexo) query = query.where('sexo', '==', sexo);
-      if (porte) query = query.where('porte', '==', porte);
-
-      const snapshot = await query.get();
-      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setPets(data);
-    } catch (error) {
-      console.error('Erro ao buscar animais:', error);
-      Alert.alert("Erro", "Ocorreu um erro ao aplicar os filtros. O Firebase pode exigir a criação de índices compostos para esta consulta. Verifique o console de erro do seu app.");
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  // Busca inicial sem filtros
   useEffect(() => {
-    fetchPets();
+    const fetchAllPets = async () => {
+      setLoading(true);
+      try {
+        const snapshot = await db.collection('animais').get();
+        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setAllPets(data); 
+        setFilteredPets(data); 
+      } catch (error) {
+        console.error('Erro ao buscar animais:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAllPets();
   }, []);
 
   const handleApplyFilters = () => {
-    fetchPets();
-    toggleFilters(); // Fecha o painel após aplicar
-  };
+    setLoading(true);
+    let petsToFilter = [...allPets];
 
+    if (idade) {
+        petsToFilter = petsToFilter.filter(pet => 
+            pet.idade && pet.idade.toLowerCase().includes(idade.toLowerCase())
+        );
+    }
+    if (localizacao) {
+        petsToFilter = petsToFilter.filter(pet => 
+            pet.localizacao && pet.localizacao.toLowerCase().includes(localizacao.toLowerCase())
+        );
+    }
+    if (especie) {
+        petsToFilter = petsToFilter.filter(pet => pet.especie === especie);
+    }
+    if (sexo) {
+        petsToFilter = petsToFilter.filter(pet => pet.sexo === sexo);
+    }
+    if (porte) {
+        petsToFilter = petsToFilter.filter(pet => pet.porte === porte);
+    }
+    
+    setFilteredPets(petsToFilter);
+    setLoading(false);
+    toggleFilters(); 
+  };
+  
   const clearFilters = () => {
     setIdade('');
     setLocalizacao('');
     setEspecie('');
     setSexo('');
     setPorte('');
-    // A busca será refeita sem filtros no próximo passo
-    fetchPets();
+    setFilteredPets(allPets); 
   };
 
   const renderItem = ({ item }) => (
@@ -100,10 +110,10 @@ export default function Home({ navigation }) {
       <Text style={styles.title}>Adote um amor, transforme uma vida!</Text>
 
       {loading ? (
-        <ActivityIndicator size="large" color="#1a7f37" />
+        <ActivityIndicator size="large" color="#1a7f37" style={{flex: 1}}/>
       ) : (
         <FlatList
-          data={pets}
+          data={filteredPets}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
           numColumns={2}
@@ -126,7 +136,7 @@ export default function Home({ navigation }) {
           <Text style={styles.filterTitle}>Filtros Avançados</Text>
 
           <Text style={styles.label}>Idade:</Text>
-          <TextInput style={styles.input} placeholder="Ex: 2 anos" value={idade} onChangeText={setIdade} />
+          <TextInput style={styles.input} placeholder="Ex: 2 anos, filhote..." value={idade} onChangeText={setIdade} />
 
           <Text style={styles.label}>Localização:</Text>
           <TextInput style={styles.input} placeholder="Cidade" value={localizacao} onChangeText={setLocalizacao} />
@@ -134,7 +144,7 @@ export default function Home({ navigation }) {
           <Text style={styles.label}>Espécie:</Text>
           <Picker selectedValue={especie} onValueChange={setEspecie} style={styles.picker}>
             <Picker.Item label="Qualquer" value="" />
-            <Picker.Item label="Cão" value="Cachorro" />
+            <Picker.Item label="Cachorro" value="Cachorro" />
             <Picker.Item label="Gato" value="Gato" />
           </Picker>
 
@@ -153,7 +163,6 @@ export default function Home({ navigation }) {
             <Picker.Item label="Grande" value="Grande" />
           </Picker>
           
-          {/* CORRIGIDO: Botões de Ação */}
           <TouchableOpacity style={styles.applyButton} onPress={handleApplyFilters}>
             <Text style={styles.applyText}>APLICAR FILTROS</Text>
           </TouchableOpacity>
@@ -166,9 +175,8 @@ export default function Home({ navigation }) {
   );
 }
 
-// ESTILOS (Adicionado clearButton e emptyText)
 const styles = StyleSheet.create({
- container: { flex: 1, backgroundColor: '#fff', paddingTop: 40 },
+  container: { flex: 1, backgroundColor: '#fff', paddingTop: 40 },
   header: {
     height: 60,
     justifyContent: 'center',
@@ -201,7 +209,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     margin: 10,
-    flex: 1/2, // Usa flex para ocupar metade do espaço
+    flex: 1/2,
     alignItems: 'center',
   },
   image: {
@@ -209,6 +217,19 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 8,
   },
+  imageContainer: {
+    position: 'relative',
+  },
+  iconPaw: {
+    position: 'absolute',
+    top: 6,
+    left: 6,
+    backgroundColor: '#1a7f37',
+    borderRadius: 12,
+    padding: 4,
+    zIndex: 1,
+  },
+
   name: {
     marginVertical: 8,
     fontWeight: 'bold',
@@ -235,6 +256,7 @@ const styles = StyleSheet.create({
     width: width * 0.85,
     backgroundColor: '#f2f2f2',
     padding: 20,
+    paddingTop: 40,
     zIndex: 10,
     elevation: 10,
     borderRightWidth: 1,
@@ -267,6 +289,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     marginTop: 5,
     borderWidth: 1,
+    borderRadius: 8,
     borderColor: '#ccc'
   },
   applyButton: {
