@@ -1,12 +1,9 @@
-// screens/ChatScreen.js (Arquivo NOVO)
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, KeyboardAvoidingView, Platform, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { firebase } from '../firebase';
 import Cabecalho2 from '../components/Cabecalho2';
 
-// Função para criar um ID de conversa único e consistente
 const getConversationId = (uid1, uid2) => {
   return uid1 < uid2 ? `${uid1}_${uid2}` : `${uid2}_${uid1}`;
 };
@@ -25,7 +22,7 @@ export default function ChatScreen({ route, navigation }) {
       .collection('conversas')
       .doc(conversationId)
       .collection('mensagens')
-      .orderBy('criadoEm', 'asc') // 'asc' para mostrar as mais antigas primeiro
+      .orderBy('criadoEm', 'desc') // CORRIGIDO: Ordem alterada para 'desc'
       .onSnapshot(snapshot => {
         const msgs = snapshot.docs.map(doc => ({
           id: doc.id,
@@ -48,14 +45,12 @@ export default function ChatScreen({ route, navigation }) {
     };
 
     try {
-      // Adiciona a mensagem na subcoleção
       await firebase.firestore()
         .collection('conversas')
         .doc(conversationId)
         .collection('mensagens')
         .add(messageData);
 
-      // Atualiza ou cria o documento da conversa com os dados mais recentes
       await firebase.firestore().collection('conversas').doc(conversationId).set({
         lastMessage: messageData,
         participantes: [currentUser.uid, otherUserId],
@@ -63,7 +58,7 @@ export default function ChatScreen({ route, navigation }) {
             [currentUser.uid]: currentUser.displayName || currentUser.email,
             [otherUserId]: otherUserName,
         }
-      }, { merge: true }); // 'merge: true' para não sobrescrever dados existentes
+      }, { merge: true });
 
       setMensagem('');
     } catch (error) {
@@ -104,7 +99,7 @@ export default function ChatScreen({ route, navigation }) {
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
           contentContainerStyle={{ padding: 15 }}
-          inverted // Começa mostrando as mensagens mais recentes
+          inverted 
         />
       </ImageBackground>
 
