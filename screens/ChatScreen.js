@@ -22,7 +22,7 @@ export default function ChatScreen({ route, navigation }) {
       .collection('conversas')
       .doc(conversationId)
       .collection('mensagens')
-      .orderBy('criadoEm', 'desc') // CORRIGIDO: Ordem alterada para 'desc'
+      .orderBy('criadoEm', 'asc') 
       .onSnapshot(snapshot => {
         const msgs = snapshot.docs.map(doc => ({
           id: doc.id,

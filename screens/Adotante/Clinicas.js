@@ -1,5 +1,3 @@
-// screens/Adotante/Clinicas.js
-
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TextInput, FlatList, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,8 +7,8 @@ import { firebase } from '../../firebase';
 const db = firebase.firestore();
 
 export default function Clinicas({ navigation }) {
-  const [todasClinicas, setTodasClinicas] = useState([]); // Guarda a lista original
-  const [clinicasFiltradas, setClinicasFiltradas] = useState([]); // Lista para ser exibida
+  const [todasClinicas, setTodasClinicas] = useState([]);
+  const [clinicasFiltradas, setClinicasFiltradas] = useState([]); 
   
   const [nomeFiltro, setNomeFiltro] = useState('');
   const [localizacaoFiltro, setLocalizacaoFiltro] = useState('');
@@ -23,14 +21,13 @@ export default function Clinicas({ navigation }) {
         lista.push({ id: doc.id, ...doc.data() });
       });
       setTodasClinicas(lista);
-      setClinicasFiltradas(lista); // Inicialmente, mostra todas
+      setClinicasFiltradas(lista);
       setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
 
-  // CORRIGIDO: Função que aplica os filtros
   const aplicarFiltros = () => {
     let resultado = todasClinicas;
 
@@ -49,11 +46,10 @@ export default function Clinicas({ navigation }) {
     setClinicasFiltradas(resultado);
   };
   
-  // ADICIONADO: Função para limpar os filtros
   const limparFiltros = () => {
       setNomeFiltro('');
       setLocalizacaoFiltro('');
-      setClinicasFiltradas(todasClinicas); // Volta a exibir a lista completa
+      setClinicasFiltradas(todasClinicas);
   }
 
   if (loading) {
@@ -86,7 +82,6 @@ export default function Clinicas({ navigation }) {
         />
       </View>
       
-      {/* CORRIGIDO: Botões agora funcionam */}
       <View style={styles.botoesContainer}>
         <TouchableOpacity style={styles.botao} onPress={aplicarFiltros}>
             <Text style={styles.botaoTexto}>Aplicar</Text>

@@ -1,5 +1,3 @@
-// screens/MensagensRecebidas.js
-
 import React, { useEffect, useState } from 'react';
 import {
   View,
@@ -27,7 +25,7 @@ export default function MensagensRecebidas({ navigation }) {
         const conversasData = snapshot.docs.map(doc => {
           const data = doc.data();
           const otherUserId = data.participantes.find(p => p !== currentUser.uid);
-          const otherUserName = data.nomesParticipantes[otherUserId] || 'Usuário'; // Garante um nome
+          const otherUserName = data.nomesParticipantes[otherUserId] || 'Usuário'; 
           const otherUserPhotoUrl = data.avatares ? data.avatares[otherUserId] : null;
           
           return {
@@ -61,7 +59,6 @@ export default function MensagensRecebidas({ navigation }) {
           <Text style={styles.emptyText}>Nenhuma conversa iniciada.</Text>
         ) : (
           conversas.map((conv) => {
-            // ATUALIZADO: Lógica para criar o avatar com iniciais
             const avatarUrl = conv.otherUserPhotoUrl 
               || `https://ui-avatars.com/api/?name=${encodeURIComponent(conv.otherUserName)}&background=random&color=fff&rounded=true&size=64`;
 
@@ -108,7 +105,6 @@ export default function MensagensRecebidas({ navigation }) {
   );
 }
 
-// Estilos mantidos
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#fff' },
     header: {

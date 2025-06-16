@@ -1,5 +1,3 @@
-// screens/ListaDoacoes.js
-
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -12,14 +10,12 @@ export default function ListaDoacoes({ navigation }) {
   const [doacoes, setDoacoes] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ADICIONADO: Pega o ID do abrigo logado
   const userId = firebase.auth().currentUser?.uid;
 
   useEffect(() => {
     if (!userId) return;
 
     const unsubscribe = db.collection('doacoes')
-      // CORRIGIDO: Adiciona filtro por ID do abrigo
       .where('abrigoId', '==', userId)
       .onSnapshot(snapshot => {
         const lista = [];

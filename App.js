@@ -1,14 +1,10 @@
-// App.js
-
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-// COMUM
 import LoginScreen from './screens/LoginScreen';
-import ChatScreen from './screens/ChatScreen'; // IMPORTADO: Tela de chat unificada
+import ChatScreen from './screens/ChatScreen';
 
-// ABRIGO
 import AbrigoCadastro from './screens/AbrigoCadastro';
 import AbrigoDashboard from './screens/AbrigoDashboard';
 import ListaPets from './screens/ListaPets';
@@ -19,7 +15,6 @@ import PedidoDoacao from './screens/PedidoDoacao';
 import EditarDoacao from './screens/EditarDoacao';
 import MensagensRecebidas from './screens/MensagensRecebidas';
 
-// ADOTANTE
 import CadastroAdotante from './screens/Adotante/CadastroAdotante';
 import Opcoes from './screens/Adotante/Opcoes';
 import TelaInicial from './screens/Adotante/TelaInicial';
@@ -36,11 +31,9 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
 
-        {/* Telas Comuns */}
         <Stack.Screen name="Login" component={LoginScreen} options={{headerShown: false}} />
         <Stack.Screen name="ChatScreen" component={ChatScreen} options={{headerShown: false}} />
 
-        {/* Telas Abrigo */}
         <Stack.Screen name="Abrigo" component={AbrigoCadastro} options={{headerShown: false}} />
         <Stack.Screen name="AbrigoDashboard" component={AbrigoDashboard} options={{headerShown: false}} />
         <Stack.Screen name="ListaPets" component={ListaPets} options={{headerShown: false}} />
@@ -51,7 +44,6 @@ export default function App() {
         <Stack.Screen name="EditarDoacao" component={EditarDoacao} options={{ headerShown: false }} />
         <Stack.Screen name="Mensagens" component={MensagensRecebidas} options={{headerShown: false}} />
         
-        {/* Telas Adotante */}
         <Stack.Screen name="CadastroAdotante" component={CadastroAdotante}options={{headerShown: false}} />
         <Stack.Screen name="Opcoes" component={Opcoes} options={{headerShown: false}} />
         <Stack.Screen name="TelaInicial" component={TelaInicial} options={{headerShown: false}} />

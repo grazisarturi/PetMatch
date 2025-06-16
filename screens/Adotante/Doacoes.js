@@ -1,5 +1,3 @@
-// screens/Adotante/Doacoes.js
-
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,7 +7,6 @@ import { firebase } from '../../firebase';
 const db = firebase.firestore();
 
 export default function Doacoes({ route, navigation }) {
-  // CORRIGIDO: Recebe os parâmetros corretos
   const { abrigoId, abrigoNome, abrigoLocalizacao } = route.params;
   const [doacoes, setDoacoes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,7 +17,6 @@ export default function Doacoes({ route, navigation }) {
         return;
     };
 
-    // CORRIGIDO: Busca as doações usando o ID do abrigo
     const unsubscribe = db.collection('doacoes')
       .where('abrigoId', '==', abrigoId)
       .onSnapshot(snapshot => {
@@ -89,7 +85,7 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 50,
     position: 'absolute',
-    top: 150, // Ajuste para descer um pouco
+    top: 150, 
     alignSelf: 'center',
     backgroundColor: '#fff',
     borderWidth: 2,
@@ -97,7 +93,7 @@ const styles = StyleSheet.create({
   },
   nomeAbrigo: {
     textAlign: 'center',
-    marginTop: 60, // Aumentado para dar espaço ao logo
+    marginTop: 60,
     fontWeight: 'bold',
     fontSize: 18
   },
@@ -116,7 +112,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 12,
     margin: 8,
-    flex: 1, // Para ocupar o espaço da coluna
+    flex: 1, 
     alignItems: 'center',
     borderColor: '#1a7f37',
     borderWidth: 1.5,

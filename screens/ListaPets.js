@@ -1,5 +1,3 @@
-// screens/ListaPets.js
-
 import React, { useEffect, useState } from 'react';
 import {
   View, Text, StyleSheet, Image,
@@ -14,16 +12,14 @@ const db = firebase.firestore();
 
 export default function ListaPets({ navigation }) {
   const [animais, setAnimais] = useState([]);
-  const [loading, setLoading] = useState(true); // ADICIONADO: Estado de carregamento
+  const [loading, setLoading] = useState(true); 
   const isFocused = useIsFocused();
   
-  // ADICIONADO: Pega o ID do usuário (abrigo) logado
   const userId = firebase.auth().currentUser?.uid;
 
   useEffect(() => {
-    if (isFocused && userId) { // CORRIGIDO: Garante que userId existe
+    if (isFocused && userId) { 
       const unsubscribe = db.collection('animais')
-        // CORRIGIDO: Adiciona o filtro para buscar apenas animais do abrigo logado
         .where('abrigoId', '==', userId)
         .onSnapshot(snapshot => {
           const lista = [];
@@ -31,7 +27,7 @@ export default function ListaPets({ navigation }) {
             lista.push({ id: doc.id, ...doc.data() });
           });
           setAnimais(lista);
-          setLoading(false); // ADICIONADO: Finaliza o carregamento
+          setLoading(false); 
         });
       return () => unsubscribe();
     } else {
@@ -70,7 +66,6 @@ export default function ListaPets({ navigation }) {
       <Cabecalho2 navigation={navigation} />
 
       <ScrollView contentContainerStyle={styles.listContainer}>
-        {/* ADICIONADO: Mensagem para quando não há animais */}
         {animais.length === 0 ? (
           <Text style={styles.emptyText}>Nenhum animal cadastrado ainda.</Text>
         ) : (
@@ -119,7 +114,6 @@ export default function ListaPets({ navigation }) {
   );
 }
 
-// ESTILOS (adicionado emptyText)
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
   listContainer: {

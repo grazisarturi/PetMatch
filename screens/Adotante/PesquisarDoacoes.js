@@ -1,5 +1,3 @@
-// screens/Adotante/PesquisarDoacoes.js
-
 import React, { useEffect, useState } from 'react';
 import {
   View,
@@ -26,12 +24,10 @@ export default function PesquisarDoacoes({ navigation }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Busca todos os pedidos de doação para encontrar os abrigos únicos
     const unsubscribe = db.collection('doacoes').onSnapshot(snapshot => {
       const abrigosMap = new Map();
       snapshot.forEach(doc => {
         const data = doc.data();
-        // Usamos o ID do abrigo para garantir que cada abrigo apareça apenas uma vez
         if (data.abrigoId && !abrigosMap.has(data.abrigoId)) {
           abrigosMap.set(data.abrigoId, {
             id: data.abrigoId,
@@ -109,7 +105,6 @@ export default function PesquisarDoacoes({ navigation }) {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.card}
-            // CORRIGIDO: Passa o ID e o Nome do abrigo para a próxima tela
             onPress={() => navigation.navigate('Doacoes', { 
                 abrigoId: item.id,
                 abrigoNome: item.nome,

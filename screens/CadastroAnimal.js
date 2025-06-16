@@ -1,5 +1,3 @@
-// screens/CadastroAnimal.js
-
 import React, { useState } from 'react';
 import {
   View, Text, TextInput, StyleSheet,
@@ -23,14 +21,12 @@ export default function CadastroAnimal({ navigation }) {
   const [castrado, setCastrado] = useState(false);
 
   const cadastrarAnimal = async () => {
-    // CORRIGIDO: Validação para não cadastrar campos vazios
     if (!nome || !especie || !raca || !idade || !sexo || !porte || !localizacao) {
       Alert.alert('Erro', 'Por favor, preencha todos os campos.');
       return;
     }
 
     try {
-      // ADICIONADO: Pega o ID do usuário (abrigo) logado
       const abrigoId = firebase.auth().currentUser.uid;
       
       await db.collection('animais').add({
@@ -43,13 +39,13 @@ export default function CadastroAnimal({ navigation }) {
         descricao,
         localizacao,
         castrado,
-        abrigoId, // ADICIONADO: Salva o ID do abrigo junto com o pet
-        imagem: 'https://via.placeholder.com/100', // Manter ou implementar upload de imagem
+        abrigoId, 
+        imagem: 'https://via.placeholder.com/100',
         criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
       });
 
       Alert.alert('Sucesso', 'Animal cadastrado com sucesso!');
-      navigation.navigate('ListaPets'); // CORRIGIDO: Navega de volta para a lista
+      navigation.navigate('ListaPets');
     } catch (error) {
       console.error('Erro ao cadastrar animal:', error);
       Alert.alert('Erro', 'Não foi possível cadastrar o animal.');
@@ -97,7 +93,6 @@ export default function CadastroAnimal({ navigation }) {
   );
 }
 
-// ESTILOS (mantidos como no original)
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
   form: { padding: 20, paddingBottom: 140 },
